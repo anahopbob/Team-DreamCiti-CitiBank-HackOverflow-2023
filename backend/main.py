@@ -21,7 +21,7 @@ def read_item(item_id: int, q: Optional[str] = None):
     return {"item_id": item_id, "q": q}
 
 
-@app.get("/search/{query}")
+@app.get("/search/{query}/{file}")
 def search(query: str, file: str):
     reader = PdfReader(file)
     raw_text = ""
@@ -58,5 +58,5 @@ def search(query: str, file: str):
         n_results=5,
     )
 
-    document_str = results['documents'][0][0]
+    return results['documents'][0][0]
 

@@ -3,7 +3,7 @@
 ## Backend setup
 ```
 cd backend
-python3 -m venv venv
+python -m venv venv
 venv\Scripts\activate
 pip install "FastAPI[all]"
 uvicorn app:app --reload
