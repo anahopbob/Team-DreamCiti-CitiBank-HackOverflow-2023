@@ -2,6 +2,10 @@ from Embedder_ABC import Embedder_ABC
 from sentence_transformers import SentenceTransformer
 
 class MiniLM_embedder(Embedder_ABC):
+    """
+    ChromaDB currently uses this model by default.
+    Leaving this in here in the future so we can swap out embeddings quicker.
+    """
     def __init__(self):
         """
         Initialize the models.

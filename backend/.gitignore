@@ -2,3 +2,4 @@ venv
 ref/
 *.pyc
 pycache/
+chroma.db/
