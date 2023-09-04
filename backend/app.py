@@ -50,4 +50,7 @@ def search(query: str, file: str):
         n_results=5,
     )
 
-    return results['documents'][0][0]
+    return results
+
+
+
