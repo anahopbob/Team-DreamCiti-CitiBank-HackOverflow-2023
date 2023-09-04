@@ -9,6 +9,10 @@ pip install "FastAPI[all]"
 uvicorn app:app --reload
 ```
 
+```
+pip install chromadb
+```
+
 ## Frontend setup
 ```
 cd frontend
