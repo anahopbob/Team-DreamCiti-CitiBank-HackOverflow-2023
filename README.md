@@ -4,7 +4,7 @@
 ```
 cd backend
 python3 -m venv venv
-venv\Scripts\activate.bat
+venv\Scripts\activate
 pip install "FastAPI[all]"
 uvicorn app:app --reload
 ```
