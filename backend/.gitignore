@@ -1,5 +1,5 @@
 venv
 ref/
 *.pyc
-pycache/
+__pycache__/
 chroma.db/

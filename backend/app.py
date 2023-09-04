@@ -2,8 +2,10 @@ from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 
 from chroma_service import DocumentParser
+from embeddings.MiniLM_embedder import MiniLM_embedder
 
 import chromadb
+from chromadb.utils import embedding_functions
 
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
@@ -42,7 +44,12 @@ def enroll(document: Document):
 
     texts, chunk_ids = DocumentParser.split_texts(text)
     print(f"Length of texts is {len(text)}")
-    return texts
+
+    # Get embeddings
+    custom_embeddings = MiniLM_embedder()
+    embeddings = custom_embeddings(texts)
+    print(len(embeddings), len(texts), embeddings[0].shape)
+    return None
 
 
 # @app.get("/search/{query}/{file}")
