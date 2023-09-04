@@ -3,8 +3,10 @@
 ## Backend setup
 ```
 cd backend
-Scripts\activate
-pip install fastapi uvicorn[standard]
+python3 -m venv venv
+venv\Scripts\activate.bat
+pip install "FastAPI[all]"
+uvicorn app:app --reload
 ```
 
 ## Frontend setup
