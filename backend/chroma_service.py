@@ -1,10 +1,11 @@
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
+from pathlib import Path
 
 class DocumentParser():
 
     @staticmethod
-    def parse_pdf(file:str):
+    def parse_pdf(file:Path):
         """Parse the PDF file and return the text content."""
         reader = PdfReader(file)
         raw_text = ""

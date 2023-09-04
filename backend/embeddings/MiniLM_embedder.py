@@ -1,5 +1,6 @@
 from chromadb import Documents, EmbeddingFunction
 from sentence_transformers import SentenceTransformer
+from typing import List
 
 class MiniLM_embedder(EmbeddingFunction):
     """
@@ -10,21 +11,12 @@ class MiniLM_embedder(EmbeddingFunction):
         """
         Initialize the models.
         """
-        self.model = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1')
+        self.model = SentenceTransformer('multi-qa-MiniLM-L6-cos-v1') 
 
-    def __call__(self, texts: Documents):
+    def __call__(self, texts: Documents)->List[List[float]]:
         embeddings = []
         for text in texts:
             embs = self.model.encode(text)
-            embeddings.append(embs)
+            embeddings.append(embs.tolist())
         return embeddings
     
-# if __name__ == "__main__":
-#     # Initialize the embedder
-#     embedder = MiniLM_embedder()
-
-#     # Get the embeddings
-#     embeddings = embedder.get_embeddings("This is a test sentence.")
-
-#     # Print the embeddings
-#     print(embeddings)
