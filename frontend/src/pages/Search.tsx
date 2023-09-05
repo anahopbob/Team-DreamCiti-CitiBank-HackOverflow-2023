@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import '../assets/styles/App.css'
 
-function Search() {
+function App() {
   const [data, setData] = useState(null);
 
   const search = () => {
@@ -16,7 +16,7 @@ function Search() {
   return (
     <>
       <div>
-        Search page
+        TESTING APIS
       </div>
       <div>
         <button onClick={search}>Data is:{JSON.stringify(data, null, 2)}</button>
@@ -25,4 +25,4 @@ function Search() {
   )
 }
 
-export default Search
+export default App
