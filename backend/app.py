@@ -1,8 +1,11 @@
 from fastapi import FastAPI, HTTPException, Request, Query
 from pydantic import BaseModel
+from app.routes import testUser  # Import your API route modules
+from fastapi.middleware.cors import CORSMiddleware
 
 from chroma_service import DocumentParser
 from embeddings.MiniLM_embedder import MiniLM_embedder
+
 
 import chromadb
 import uuid
@@ -124,3 +127,24 @@ def search_items(
 
 
 
+# CORS (Cross-Origin Resource Sharing) configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # You might want to restrict this in production
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Dependency injection configuration
+app.include_router(testUser.router, prefix="/v1/users", tags=["users"])
+
+# Initialize database
+
+
+# Custom middleware
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
