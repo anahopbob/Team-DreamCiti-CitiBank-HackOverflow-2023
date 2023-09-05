@@ -1,17 +1,26 @@
+from fastapi import APIRouter, Query, File, UploadFile, HTTPException
 from app.embeddings.MiniLM_embedder import MiniLM_embedder
 from app.services import chroma_service
 from app.models import chromaDocument 
 from app.services.summary import SummariseContext
 
-from fastapi import APIRouter, Query, UploadFile, File
 from fastapi.responses import JSONResponse
 
 import chromadb
 import uuid
+import fitz
+import PIL.Image
+import io
+import os
+import tabula
+import pandas as pd
+
 from typing import List
 
 from chromadb.utils import embedding_functions
 from PyPDF2 import PdfReader
+from pdfminer.high_level import extract_text, extract_pages
+
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import ElasticVectorSearch, Pinecone, Weaviate, FAISS
 from langchain.chains.question_answering import load_qa_chain
@@ -20,13 +29,75 @@ Document = chromaDocument.Document
 DocumentParser = chroma_service.DocumentParser
 
 router = APIRouter()
+
 client = chromadb.PersistentClient(
-                                path="db/chroma.db"
-                                )   
+    path="db/chroma.db"
+)   
 collection = client.get_or_create_collection(
     name="documents",
     metadata={"hnsw:space": "cosine"}
 )
+
+@router.post("/pdf-enroll")
+async def pdf_enroll(file: UploadFile):
+    """
+    Given a file (PDF/Word) upload, extract its text and images. 
+    The file and its images will be stored in the AWS S3 bucket and 
+    together with the reformatted text, it will then be enrolled into the Vector DB.
+    """
+    # Extracting file properties
+    fileName = file.filename
+    fileExtension = file.filename.split(".")[-1].lower()
+
+    # Determining file type
+    if fileExtension == "pdf":
+        try:
+            # extract text from pdf
+            pdfContent = await file.read()
+            text = extract_text(io.BytesIO(pdfContent))
+        
+            # extract images from pdf
+            # Create a PDF document object using PyMuPDF (Fitz)
+            pdf_document = fitz.open(stream=pdfContent, filetype="pdf")
+
+            # Directory to save extracted images
+            images_dir = "images"
+            os.makedirs(images_dir, exist_ok=True)
+
+            # Initialize a counter for images
+            counter = 0
+
+            # Iterate through each page of the PDF
+            for page_number in range(len(pdf_document)):
+                page = pdf_document.load_page(page_number)
+                
+                # Extract images from the page
+                images = page.get_images(full=True)
+                
+                for idx, image in enumerate(images):
+                    xref = image[0]
+                    base_img = pdf_document.extract_image(xref)
+                    image_data = base_img["image"]
+                    extension = base_img["ext"]
+                    image_filename = os.path.join(images_dir, f"image_{counter}.{extension}")
+
+                    # currently saves to images folder in backend root directory (to be changed once s3 set up)
+                    with open(image_filename, "wb") as image_file:
+                        image_file.write(image_data)
+
+                    counter += 1
+            
+            # Close the PDF document
+            pdf_document.close()
+        
+            return {"extracted text": text, "image count": counter}
+        
+        except Exception as e:
+            return {"error": str(e)}
+        
+    else:
+        raise HTTPException(status_code=400, detail="Uploaded file is not a PDF")
+    
 
 @router.post("/enroll")
 def enroll(document: Document)->None:

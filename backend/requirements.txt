@@ -8,6 +8,7 @@ pillow
 PyMuPDF
 tabula-py
 pandas
+python-multipart
 openai==0.28.0
 overrides==7.4.0
 packaging==23.1
