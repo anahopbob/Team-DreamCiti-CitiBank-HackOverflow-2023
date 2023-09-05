@@ -1,6 +1,6 @@
 import re
 import uuid
-from typing import List
+from typing import List, Tuple
 
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
@@ -9,9 +9,10 @@ from pathlib import Path
 class DocumentParser():
     # TAGS_REGX  = r'<\?%\s*.*?%\s*>'
     TAGS_REGX  = r'<\?%\s*(.*?)%\s*>'
+    TAGS_MAX_LEN = 50
 
     @staticmethod
-    def parse_pdf(file:Path):
+    def parse_pdf(file:Path)->str:
         """Parse the PDF file and return the text content."""
         reader = PdfReader(file)
         raw_text = ""
@@ -22,7 +23,7 @@ class DocumentParser():
         return raw_text
     
     @staticmethod
-    def parse_raw_texts(raw_texts:str):
+    def parse_raw_texts(raw_texts:str)->Tuple[List[str],List[str]]:
         """
         Accepts the entire text in string format with <%? %> tags included
         and parses it.
@@ -54,7 +55,7 @@ class DocumentParser():
 
 
     @staticmethod
-    def split_texts(raw_text: str):
+    def split_texts(raw_text: str)->List[str]:
         """Split the text into chunks of text."""
         text_splitter = CharacterTextSplitter(
             separator = "",
@@ -68,7 +69,7 @@ class DocumentParser():
         return texts
     
     @staticmethod
-    def extract_tags(text:str):
+    def extract_tags(text:str)->List[Tuple[str,str]]:
         """
         Given an excerpt, extract out the selected tags
         """
@@ -84,7 +85,7 @@ class DocumentParser():
         return output
     
     @staticmethod
-    def check_broken_tags(text:str, tag_max_length:int=50) -> List[bool]:
+    def check_broken_tags(text:str, tag_max_length:int=TAGS_MAX_LEN) -> List[bool]:
         """
         Given a text, scans to see if there are broken text.
         Looks out for <%? and %>
@@ -103,20 +104,26 @@ class DocumentParser():
         first_index = text_start.find(">")
         if first_index != -1:
             # Means there might be broken tag at the start
-            if first_index - 1 >= 0 and text_start[first_index-1] == "%": # %>
+            if first_index -1 > 0 : #This means the sentence starts with ">", cannot identify if it is broken. Will just say its true
+                output[0] = True
+            elif text_start[first_index-1] == "%": # %>
                 if text_start.find("<?%") != -1:
                     # This means the tag is complete
                     output[0] = False
                 else:
                     output[0] = True
+            else: # This means the start starts with " > ..." which is not an end tag. 
+                output[0] = False
         
         # Find all occurences of "<" in end
         last_index = text_end.rfind("<")
         if last_index != -1:
+            if last_index == len(text_end) - 1: # This means the last character is "<", cannot identify if it is broken. Will just say its true
+                output[1] = True
             # Means there might be broken tag at the end
             # Find index of "<"
             # Check if the next character is "%?"
-            if last_index + 1 < len(text_end) and text_end[last_index+1] == "?": # <? 
+            elif last_index + 1 < len(text_end) and text_end[last_index+1] == "?": # <? 
                 if last_index + 2 < len(text_end) and text_end[last_index+2] == "%": # <?%
                     # Check if from the last_index to the end, is there a "%>"
                     if "%>" in text_end[last_index:]:
@@ -124,8 +131,24 @@ class DocumentParser():
                         output[1] = False
                     else:
                         output[1] = True
+            else: # This means that "< " which is not a closing tag
+                output[1] = False
                 
         return output
+    
+    @staticmethod
+    def fix_broken_tags(
+        excerpt:str,
+        full_text:str,
+        indicator:List[bool],
+        tag_max_length:int=TAGS_MAX_LEN
+        )-> str:
+        # Start is broken
+        if indicator[0]: 
+            first_index = excerpt.find(">")
+
+
+
 
 if __name__ == "__main__":
     # text = f"of life's cruelties. <?% type=image,object_id={str(uuid.uuid4())[:-6]} %> <?% type=image,object_id={str(uuid.uuid4())[:-6]} %> Were they necessary for growth, like the way heat transforms sugar into the sweetest candies? Or were they simply random, like a child's choice of which jelly bean to eat next? <?% type=text,object_id={str(uuid.uuid4())[:-6]} %> In that moment, as it melted away in the warmth of a child's mouth, Jello found a bitte"
