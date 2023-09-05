@@ -20,7 +20,7 @@ class DocumentParser():
         """Split the text into chunks of text."""
         text_splitter = CharacterTextSplitter(
             separator = "",
-            chunk_size = 300, # need to research on the right value to use for chunk_size and chunk_overlap
+            chunk_size = 1000, # need to research on the right value to use for chunk_size and chunk_overlap
             chunk_overlap = 50,
             length_function = len,
         )

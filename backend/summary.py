@@ -2,14 +2,15 @@ import os
 import openai
 from typing import List
 from dotenv import load_dotenv
+
 load_dotenv()
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 class SummariseContext():
 
     @staticmethod
     def summarise_context(context: List[str], query:str):
+        openai.api_key = os.getenv("OPENAI_API_KEY")
         """Summarise the context."""
         combined_text = ("\n").join(context)
         content = f"You are an AI assistant for searching and understanding of documents and context using the query {query} and the following context {combined_text}."
