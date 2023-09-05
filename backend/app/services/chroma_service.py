@@ -207,7 +207,7 @@ if __name__ == "__main__":
     
     # Test fix_broken_tag
     fulltext = "This is the full text with the tags <?% type=extra,object_id=456 %> here, another tag here <?% type=extra,object_id=456 %>, one more tag here!"
-    excerpt1 = "pe=extra<,object_id=456 %> here, another tag here <?% type=extra,object_id=45"
+    excerpt1 = "pe=extra,object_id=456 %> here, another tag here <?% type=extra,object_id=45"
     excerpt2 = "This is the full text with the tags <"
     excerpt3 = "> here, another tag here"
 
