@@ -2,9 +2,12 @@ from fastapi import APIRouter, Query
 from app.embeddings.MiniLM_embedder import MiniLM_embedder
 from app.services import chroma_service
 from app.models import chromaDocument 
+from summary import SummariseContext
 
 import chromadb
 import uuid
+from typing import List
+
 from chromadb.utils import embedding_functions
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
@@ -76,3 +79,10 @@ def search_items(
     )
 
     return results
+
+@router.get("/summarise/")
+def summarise_items(results_arr: List[str]) -> str:
+
+    summary_output = SummariseContext.summarise_context(results_arr)
+
+    return summary_output
