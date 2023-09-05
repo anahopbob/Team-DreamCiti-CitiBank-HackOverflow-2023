@@ -105,10 +105,6 @@ def search_items(
         return JSONResponse(content={"message": "No results found"}, status_code=200)
     else:
         return JSONResponse(content={"results": results}, status_code=200)
-    # results_arr = [query]
-    # results_arr += results['documents'][0]
-
-    # return results_arr
 
 @router.post("/summarise")
 def summarise_items(
@@ -120,6 +116,26 @@ def summarise_items(
     except Exception as e:
         return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
     
+@router.post("/delete")
+def delete_object(
+        object_id: str,
+        association: List[str] = None
+    ):
+    """
+    Given an object_id that corrosponds to the one inside S3,
+    delete all related embeddings inside ChromaDB.
+    Currently, association is hard coded.
+    """
+    # Connect to  bucket to get association list 
+    if len(association) == 0:
+        return JSONResponse(content={"message": f"Object {object_id} is not associated with anything!"}, status_code=200)
+    try:
+        collection.delete(
+            ids=association
+        )
+        return JSONResponse(content={"message": f"{len(association)} embeddings associated with {object_id} have been deleted!"}, status_code=200)
+    except Exception as e:
+        return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
 
 # =============== Image Related Endpoints =================
 
