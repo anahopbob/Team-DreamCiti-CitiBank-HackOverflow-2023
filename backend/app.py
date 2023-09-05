@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from app.routes import testUser  # Import your API route modules
+from fastapi.middleware.cors import CORSMiddleware
 
 import chromadb
 from PyPDF2 import PdfReader
@@ -54,3 +56,24 @@ def search(query: str, file: str):
 
 
 
+# CORS (Cross-Origin Resource Sharing) configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # You might want to restrict this in production
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Dependency injection configuration
+app.include_router(testUser.router, prefix="/v1/users", tags=["users"])
+
+# Initialize database
+
+
+# Custom middleware
+
+
+if __name__ == "__main__":
+    import uvicorn
+
+    uvicorn.run(app, host="0.0.0.0", port=8000)
