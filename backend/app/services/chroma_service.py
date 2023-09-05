@@ -37,13 +37,10 @@ class DocumentParser():
 
         for text in texts:
             # Extract tags
-            print("=====Raw Text is here====")
-            print(text)
             broken_tags = DocumentParser.check_broken_tags(text)
             text = DocumentParser.fix_broken_tags(text, raw_texts, broken_tags)
             text = DocumentParser.trim_broken_text(text)
-            print("----Parsed Text is here---")
-            print(text)
+          
             tags = DocumentParser.extract_tags(text)
             if len(tags) == 0:
                 output_text.append(text)
@@ -60,12 +57,7 @@ class DocumentParser():
                     tag_string += f"{tag[1].strip()},"
                 tag_string = tag_string[:-1]
                 output_object_ids.append(tag_string)
-            print("----Output items are ----")
-            print(output_text)
-            print(output_object_ids)
-            print("=================")
-            print()
-            print()
+  
         return output_text, output_object_ids
 
 
