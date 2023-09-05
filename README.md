@@ -15,7 +15,7 @@ venv\Scripts\activate
 pip install -r requirements.txt
 
 # run the local backend server using uvicorn (ASGI Web Server Implementation)
-uvicorn app:app --reload
+uvicorn main:app --reload
 
 # access the FastAPI app root page
 http://127.0.0.1:8000
