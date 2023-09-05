@@ -81,6 +81,10 @@ class DocumentParser():
                 assert len(type) != 0 and len(object_id) != 0, f"Invalid tag format, {type, object_id}!" 
                 output.append((type, object_id))
         return output
+    
+    # @staticmethod
+    # def check_broken_tags(text:str):
+
 
 if __name__ == "__main__":
     text = f"of life's cruelties. <?% type=image,object_id={str(uuid.uuid4())[:-6]} %> <?% type=image,object_id={str(uuid.uuid4())[:-6]} %> Were they necessary for growth, like the way heat transforms sugar into the sweetest candies? Or were they simply random, like a child's choice of which jelly bean to eat next? <?% type=text,object_id={str(uuid.uuid4())[:-6]} %> In that moment, as it melted away in the warmth of a child's mouth, Jello found a bitte"
