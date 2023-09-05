@@ -2,7 +2,7 @@
 import "./App.css";
 import { RouterProvider } from "react-router-dom";
 
-import AppRoutes from "./routes";
+import AppRoutes from "../routes";
 function App() {
   // const [data, setData] = useState(null);
 
