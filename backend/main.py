@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException, Request, Query
 from pydantic import BaseModel
-from app.routes import testUser  # Import your API route modules
+# from app.routes import testUser  # Import your API route modules
 from fastapi.middleware.cors import CORSMiddleware
 
 from chroma_service import DocumentParser
@@ -136,7 +136,7 @@ app.add_middleware(
 )
 
 # Dependency injection configuration
-app.include_router(testUser.router, prefix="/v1/users", tags=["users"])
+# app.include_router(testUser.router, prefix="/v1/users", tags=["users"])
 
 # Initialize database
 
