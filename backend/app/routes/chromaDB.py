@@ -1,46 +1,29 @@
-from fastapi import FastAPI, HTTPException, Request, Query
-from pydantic import BaseModel
-
-from chroma_service import DocumentParser
-from embeddings.MiniLM_embedder import MiniLM_embedder
+from fastapi import APIRouter, Query
+from app.services import MiniLM_embedder, chroma_service
+from app.models import chromaDocument 
 
 import chromadb
 import uuid
 from chromadb.utils import embedding_functions
-
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import ElasticVectorSearch, Pinecone, Weaviate, FAISS
 from langchain.chains.question_answering import load_qa_chain
 
-# Initialize FastAPI
-app = FastAPI()
+Document = chromaDocument.Document
+MiniLM_embedder = MiniLM_embedder.MiniLM_embedder
+DocumentParser = chroma_service.DocumentParser
 
-# Document Item for POST Enroll
-class Document(BaseModel):
-    id:str #From s3 bucket
-    text:str
-    department:str
-
-# Initialize chroma db client 
+router = APIRouter()
 client = chromadb.PersistentClient(
                                 path="db/chroma.db"
                                 )   
 collection = client.get_or_create_collection(
     name="documents",
     metadata={"hnsw:space": "cosine"}
-) 
+)
 
-@app.get("/")
-async def root():
-    return { "message": "Hello world" }
-
-# Ideally this will take in the file
-# Right now, it takes in a str only
-
-
-
-@app.post("/enroll") 
+@router.post("/enroll")
 def enroll(document: Document)->None:
     """
     Given a particular department and text, get embeddings for the text 
@@ -76,7 +59,7 @@ def enroll(document: Document)->None:
 
     return None
 
-@app.get("/search/")
+@router.get("/search/")
 def search_items(
     department: str = Query(None, description="Department name (optional)"),
     query: str = Query(..., description="Query string"),
@@ -88,7 +71,3 @@ def search_items(
     )
 
     return results
-
-
-
-
