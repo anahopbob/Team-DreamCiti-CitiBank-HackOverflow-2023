@@ -36,19 +36,24 @@ def enroll(document: Document)->None:
     department = document_dict.get("department","")
 
     # Parses text here
-    texts = DocumentParser.split_texts(text)
+    texts, content_ids = DocumentParser.parse_raw_texts(text)
 
     # ============ Start AI Portion==============
     # Get embeddings
     custom_embeddings = MiniLM_embedder()
     embeddings = custom_embeddings(texts)
 
-    # Set metadata
-    metadata = [{"department": department, 
-                 "object_id": id,
-                   } # Include image IDs
-                 for i in range(len(texts))]
-    
+    # Function to get content_id (replace with your actual logic)
+
+    # Create metadata list
+    metadata = [
+        {
+            "department": department,
+            "object_id": id,
+            "content_id": content_ids[idx]
+        }
+        for idx, _ in enumerate(range(len(texts)))
+    ]
     collection.add(
         embeddings=embeddings,
         documents=texts,
