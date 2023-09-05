@@ -78,10 +78,10 @@ def search_items(
         n_results=5,
     )
 
-    results_arr = [query]
-    results_arr += results['documents'][0]
+    # results_arr = [query]
+    # results_arr += results['documents'][0]
 
-    return results_arr
+    # return results_arr
 
     return results
 

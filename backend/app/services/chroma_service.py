@@ -8,7 +8,8 @@ from pathlib import Path
 
 class DocumentParser():
     # TAGS_REGX  = r'<\?%\s*.*?%\s*>'
-    TAGS_REGX  = r'<\?%\s*(.*?)%\s*>'
+    # TAGS_REGX  = r'<\?%\s*(.*?)%\s*>'
+    TAGS_REGX = r'<\?%\s*type=(.*?),\s*object_id=(.*?)\s*%\s*>'
     TAGS_MAX_LEN = 50
 
     @staticmethod
@@ -33,8 +34,16 @@ class DocumentParser():
 
         # Split the text into chunks
         texts = DocumentParser.split_texts(raw_texts)
+
         for text in texts:
             # Extract tags
+            print("=====Raw Text is here====")
+            print(text)
+            broken_tags = DocumentParser.check_broken_tags(text)
+            text = DocumentParser.fix_broken_tags(text, raw_texts, broken_tags)
+            text = DocumentParser.trim_broken_text(text)
+            print("----Parsed Text is here---")
+            print(text)
             tags = DocumentParser.extract_tags(text)
             if len(tags) == 0:
                 output_text.append(text)
@@ -51,6 +60,12 @@ class DocumentParser():
                     tag_string += f"{tag[1].strip()},"
                 tag_string = tag_string[:-1]
                 output_object_ids.append(tag_string)
+            print("----Output items are ----")
+            print(output_text)
+            print(output_object_ids)
+            print("=================")
+            print()
+            print()
         return output_text, output_object_ids
 
 
@@ -59,7 +74,7 @@ class DocumentParser():
         """Split the text into chunks of text."""
         text_splitter = CharacterTextSplitter(
             separator = "",
-            chunk_size = 300, # need to research on the right value to use for chunk_size and chunk_overlap
+            chunk_size = 750, # need to research on the right value to use for chunk_size and chunk_overlap
             chunk_overlap = 50,
             length_function = len,
         )
@@ -73,15 +88,13 @@ class DocumentParser():
         """
         Given an excerpt, extract out the selected tags
         """
-        matches = re.findall(DocumentParser.TAGS_REGX, text)
         output = []
-        if len(matches) > 0:
-            for match in matches:
-                type, object_id = match.split(",")
-                type = type.split("=")[1]
-                object_id = object_id.split("=")[1]
-                assert len(type) != 0 and len(object_id) != 0, f"Invalid tag format, {type, object_id}!" 
-                output.append((type, object_id))
+        matches = re.finditer(DocumentParser.TAGS_REGX, text)
+        for match in matches:
+            type, object_id = match.groups()
+            assert len(type) != 0 and len(object_id) != 0, f"Invalid tag format, {type, object_id}!" 
+            output.append((type, object_id))
+
         return output
     
     @staticmethod
@@ -151,18 +164,18 @@ class DocumentParser():
         if indicator[0]: 
             first_index = excerpt.find(">") # Assumption here is that everything on the left of this is the broken tag
             # Add in the tags max length in front
-            if index - tag_max_length > 0: # 66 - 50 = 16 
-                excerpt = full_text[index - tag_max_length: index] + excerpt[first_index:]
+            if index - tag_max_length > 0: # 
+                excerpt = full_text[index - tag_max_length: first_index+1] + excerpt[first_index:]
             else:
-                excerpt = full_text[:index] + excerpt[first_index:]
+                excerpt = full_text[:first_index+1] + excerpt[first_index:]
         # End is broken
         if indicator[1]:
             last_index = excerpt.rfind("<")
             index += len(excerpt) # Get the end index in full text
             if index + tag_max_length < len(full_text):
-                excerpt = excerpt + full_text[last_index+1: index + tag_max_length]
+                excerpt = excerpt[:last_index+1] + full_text[index+len(excerpt): index + len(excerpt) + tag_max_length]
             else:
-                excerpt = excerpt + full_text[last_index+1:]
+                excerpt = excerpt[:last_index+1] + full_text[index+len(excerpt): index:]
         # Sometimes when you extend the excerpt, it might have another broken part. 
         # In order to prevent this, we will trim 
 
@@ -173,6 +186,8 @@ class DocumentParser():
         opening_tag = text.find("<?%")
         ending_tag = text.find("%>")
         if ending_tag < opening_tag: # Means "%> <?%...%>" 
+            text = text[ending_tag+2:]
+        elif opening_tag == -1 and ending_tag != -1: # Means "%>...%>"
             text = text[ending_tag+2:]
 
         opening_tag = text.rfind("<?%")
