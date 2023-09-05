@@ -87,8 +87,9 @@ def search_items(
 
 @router.post("/summarise")
 def summarise_items(
-    results_arr: dict
-    ) -> str:
-    summary_output = SummariseContext.summarise_context(results_arr["results_arr"])
+    results_arr: List[str]
+    ):
+    # return results_arr
+    summary_output = SummariseContext.summarise_context(results_arr)
 
     return summary_output
