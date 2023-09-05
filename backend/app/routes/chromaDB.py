@@ -2,7 +2,7 @@ from fastapi import APIRouter, Query
 from app.embeddings.MiniLM_embedder import MiniLM_embedder
 from app.services import chroma_service
 from app.models import chromaDocument 
-from summary import SummariseContext
+from app.services.summary import SummariseContext
 
 import chromadb
 import uuid
@@ -78,11 +78,17 @@ def search_items(
         n_results=5,
     )
 
+    results_arr = [query]
+    results_arr += results['documents'][0]
+
+    return results_arr
+
     return results
 
-@router.get("/summarise/")
-def summarise_items(results_arr: List[str]) -> str:
-
-    summary_output = SummariseContext.summarise_context(results_arr)
+@router.post("/summarise")
+def summarise_items(
+    results_arr: dict
+    ) -> str:
+    summary_output = SummariseContext.summarise_context(results_arr["results_arr"])
 
     return summary_output
