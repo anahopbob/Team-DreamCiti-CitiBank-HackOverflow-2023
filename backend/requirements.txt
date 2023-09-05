@@ -8,6 +8,7 @@ pillow
 PyMuPDF
 tabula-py
 pandas
+python-multipart
 openai==0.28.0
 # aiohttp==3.8.5
 # aiosignal==1.3.1
