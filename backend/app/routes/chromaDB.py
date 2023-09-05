@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, UploadFile, File
 from app.embeddings.MiniLM_embedder import MiniLM_embedder
 from app.services import chroma_service
 from app.models import chromaDocument 
@@ -38,7 +38,7 @@ def enroll(document: Document)->None:
     text = document_dict.get("text","")
     department = document_dict.get("department","")
 
-    # Parses text here
+    # Parses text here, fixes the tags
     texts, content_ids = DocumentParser.parse_raw_texts(text)
 
     # ============ Start AI Portion==============
@@ -48,7 +48,7 @@ def enroll(document: Document)->None:
 
     # Function to get content_id (replace with your actual logic)
 
-    # Create metadata list
+    # Create metadata list, add in object_id and department
     metadata = [
         {
             "department": department,
@@ -57,6 +57,8 @@ def enroll(document: Document)->None:
         }
         for idx, _ in enumerate(range(len(texts)))
     ]
+    
+    # Added into vectordb
     collection.add(
         embeddings=embeddings,
         documents=texts,
@@ -92,3 +94,6 @@ def summarise_items(
     summary_output = SummariseContext.summarise_context(results_arr["results_arr"])
 
     return summary_output
+
+# =============== Image Related Endpoints =================
+
