@@ -31,14 +31,13 @@ class DocumentParser():
         )
         
         texts = text_splitter.split_text(raw_text)
-        
-        chunk_ids = []
-        index = 1
+     
         for text in texts:
-            chunk_ids.append(f"id{index}")
-            index+=1
+            # Extracting tags
+            tags = DocumentParser.extract_tags(text)
+    
         
-        return texts, chunk_ids
+        return texts
     
     @staticmethod
     def extract_tags(text:str):

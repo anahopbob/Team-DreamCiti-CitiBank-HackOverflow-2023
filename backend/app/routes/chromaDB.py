@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Query
-from app.services import MiniLM_embedder, chroma_service
+from app.embeddings.MiniLM_embedder import MiniLM_embedder
+from app.services import chroma_service
 from app.models import chromaDocument 
 
 import chromadb
@@ -11,7 +12,6 @@ from langchain.vectorstores import ElasticVectorSearch, Pinecone, Weaviate, FAIS
 from langchain.chains.question_answering import load_qa_chain
 
 Document = chromaDocument.Document
-MiniLM_embedder = MiniLM_embedder.MiniLM_embedder
 DocumentParser = chroma_service.DocumentParser
 
 router = APIRouter()
@@ -36,7 +36,7 @@ def enroll(document: Document)->None:
     department = document_dict.get("department","")
 
     # Parses text here
-    texts, chunk_ids = DocumentParser.split_texts(text)
+    texts = DocumentParser.split_texts(text)
 
     # ============ Start AI Portion==============
     # Get embeddings
@@ -46,7 +46,7 @@ def enroll(document: Document)->None:
     # Set metadata
     metadata = [{"department": department, 
                  "object_id": id,
-                  "images" : [] } # Include image IDs
+                   } # Include image IDs
                  for i in range(len(texts))]
     
     collection.add(
