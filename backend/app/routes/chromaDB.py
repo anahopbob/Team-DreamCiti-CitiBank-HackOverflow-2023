@@ -144,10 +144,17 @@ def search_items(
     query: str = Query(..., description="Query string"),
 ):
     # Use 5 Chunks of text to do the similarity search
-    results = collection.query(
-        query_texts=[query],
-        n_results=5,
-    )
+    if department == None:
+        results = collection.query(
+            query_texts=[query],
+            n_results=5,
+        )
+    else:
+        results = collection.query(
+            query_texts=[query],
+            n_results=5,
+            where={"department": department}
+        )
 
     # results_arr = [query]
     # results_arr += results['documents'][0]
