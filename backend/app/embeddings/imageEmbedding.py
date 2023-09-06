@@ -4,7 +4,6 @@ from tensorflow.keras.preprocessing import image
 
 
 from keras.applications.vgg16 import VGG16
-from sklearn.metrics.pairwise import cosine_similarity
 
 class ImageEmbedding:
 
