@@ -104,7 +104,7 @@ async def pdf_enroll(file: UploadFile):
                         uniqueId = str(uuid.uuid4())[:]
                         image_id = f"<?% type=image,object_id={uniqueId} %>"
 
-                        # for storing in s3 bucket
+                        # (to be linked with s3)
                         # image_name = f"type=image,object_id={uniqueId}.{extension}"
 
                         # currently saves to images folder in backend root directory (to be changed to s3 bucket)
@@ -119,8 +119,28 @@ async def pdf_enroll(file: UploadFile):
                 
             # Close the PDF document after iteration completed
             pdf_document.close()
-        
-            return {"extracted text": ''.join(extractedText)}
+            
+            # Invoke AI PDF Enrollment function here (ID to be retrieved from s3, department to be retrieved from frontend)
+            sampleId = "12345"
+            sampleDepartment = "HumanResources"
+            finalText = ''.join(extractedText)
+
+            # print("sampleId: ", sampleId)
+            # print("sampleDepartment: ", sampleDepartment)
+            # print("finalText: ", finalText)
+
+            finalDocument = {
+                "id": sampleId,
+                "text": finalText,
+                "department": sampleDepartment
+            }
+
+            # Determining success of enrollment based on status code
+            response = enroll(finalDocument)
+            if response.status_code == 200:
+                return {"message": "Successfully uploaded PDF"}
+            else:
+                return {"message": "Error in uploading PDF"}
         
         # catching and returning any errors
         except Exception as e:
@@ -139,10 +159,9 @@ def enroll(document: Document)->None:
     """
     try:
         # Getting info from POST
-        document_dict = document.dict()
-        id = document_dict.get("id","")
-        text = document_dict.get("text","")
-        department = document_dict.get("department","")
+        id = document.get("id","")
+        text = document.get("text","")
+        department = document.get("department","")
 
         # Parses text here, fixes the tags
         texts, content_ids = DocumentParser.parse_raw_texts(text)
