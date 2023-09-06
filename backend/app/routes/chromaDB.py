@@ -50,11 +50,9 @@ async def pdf_enroll(file: UploadFile):
     # Determining file type
     if fileExtension == "pdf":
         try:
-            # extract text from pdf
+            # read pdf file
             pdfContent = await file.read()
-            text = extract_text(io.BytesIO(pdfContent))
         
-            # extract images from pdf
             # Create a PDF document object using PyMuPDF (Fitz)
             pdf_document = fitz.open(stream=pdfContent, filetype="pdf")
 
@@ -62,37 +60,54 @@ async def pdf_enroll(file: UploadFile):
             images_dir = "images"
             os.makedirs(images_dir, exist_ok=True)
 
-            # Initialize a counter for images
-            counter = 0
+            # Initialize a variable to store all the extracted text, with delimiter for separate pages and images
+            extractedText = [] 
 
             # Iterate through each page of the PDF
             for page_number in range(len(pdf_document)):
                 page = pdf_document.load_page(page_number)
-                
-                # Extract images from the page
+
+                # Extract text from the page
+                pageText = page.get_text()
+
+                # Check if the page contains images and extract all images (using OCR to detect images)
                 images = page.get_images(full=True)
+
+                # If page contains images, add a unique image indicator to the extracted text for that particular page only
+                if images:
+                    for idx, image in enumerate(images):
+                        xref = image[0]
+                        base_img = pdf_document.extract_image(xref)
+                        image_data = base_img["image"]
+                        extension = base_img["ext"]
+
+                        # renaming the image file accordingly with a unique id for text extractation formatting
+                        uniqueId = str(uuid.uuid4())[:]
+                        image_id = f"<?% type=image,object_id={uniqueId} %>"
+
+                        # for storing in s3 bucket
+                        # image_name = f"type=image,object_id={uniqueId}.{extension}"
+
+                        # currently saves to images folder in backend root directory (to be changed to s3 bucket)
+                        # with open(test_image_id, "wb") as image_file:
+                        #     image_file.write(image_data)
+
+                        # Add image indicator to the extracted text
+                        pageText = image_id + pageText + image_id
                 
-                for idx, image in enumerate(images):
-                    xref = image[0]
-                    base_img = pdf_document.extract_image(xref)
-                    image_data = base_img["image"]
-                    extension = base_img["ext"]
-                    image_filename = os.path.join(images_dir, f"image_{counter}.{extension}")
-
-                    # currently saves to images folder in backend root directory (to be changed once s3 set up)
-                    with open(image_filename, "wb") as image_file:
-                        image_file.write(image_data)
-
-                    counter += 1
-            
-            # Close the PDF document
+                # Add the extracted text to the overall extracted text
+                extractedText.append(pageText)
+                
+            # Close the PDF document after iteration completed
             pdf_document.close()
         
-            return {"extracted text": text, "image count": counter}
+            return {"extracted text": ''.join(extractedText)}
         
+        # catching and returning any errors
         except Exception as e:
             return {"error": str(e)}
-        
+    
+    # raising HTTP exception if file is not a PDF
     else:
         raise HTTPException(status_code=400, detail="Uploaded file is not a PDF")
     
