@@ -98,3 +98,4 @@ websockets==11.0.3
 yarl==1.9.2
 zipp==3.16.2
 tensorflow==2.13.0
+selenium==4.12.0

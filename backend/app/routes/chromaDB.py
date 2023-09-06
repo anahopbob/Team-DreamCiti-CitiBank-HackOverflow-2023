@@ -5,6 +5,7 @@ from app.models import chromaDocument
 from app.services.summary import SummariseContext
 from app.embeddings.imageToText import ImageToText
 from app.embeddings.imageEmbedding import ImageEmbedding
+from app.services.webscrape import WebScrape
 
 import chromadb
 import uuid
@@ -310,3 +311,9 @@ def summarise_items(
 
     return summary_output
 
+@router.get("/webscrape")
+def get_webscrape(website: str = Query(None, description="Website to scrape")):
+    results = WebScrape.getWebScrape(website)
+    document = Document(id=website, text=results, department="test")
+    enroll(document)
+    return results
