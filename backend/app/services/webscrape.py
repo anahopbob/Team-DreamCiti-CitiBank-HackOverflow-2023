@@ -23,7 +23,7 @@ class WebScrape:
 
         # wiki_url = driver.find_element_by_class_name('iUh30').text.replace(' › ','/')
         # wiki_url = driver.find_element(By.CLASS_NAME, 'iUh30').text.replace(' › ','/')
-        driver.get('https://en.wikipedia.org/wiki/Citibank')
+        driver.get(website)
 
         # text = driver.find_element(By.XPATH, '//*[@id="mw-content-text"]/div[1]/p[2]').text
         # # text = driver.find_element_by_xpath('//*[@id="mw-content-text"]/div[1]/p[2]').text
@@ -39,14 +39,15 @@ class WebScrape:
         #     img_str += f'\n{i.get_attribute("src")}\n'
             el_width= int(i.get_attribute('width'))
             el_height = int(i.get_attribute('height'))
-            if min(el_width, el_height) > 100:
-                img_str+= f'\n{i.get_attribute("src")}\n'
+            if min(el_width, el_height) > 50:
+                img_src = i.get_attribute("src")
+                img_caption = img_src.split('/')[-1].split('.')[0]
+                img_str+= f'\n{img_src}\n'
+                print(img_caption)
 
         para = driver.find_elements(By.TAG_NAME, 'p')
-        final = ''
+        final_text = ''
         for index, para in enumerate(para):
-            final += f'\n{para.text}\n'
-        print(final)
-        print()
-        print(img_str)
-        return final
+            final_text += f'\n{para.text}\n'
+
+        return final_text 
