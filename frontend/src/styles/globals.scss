@@ -1,0 +1,204 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    flex-shrink: 0;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    border-color: transparent;
+    text-align: center;
+    transition-property: all;
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--rounded-btn, 0.5rem);
+    height: 3rem;
+    font-size: 0.875rem;
+    line-height: 1rem;
+    min-height: 3rem;
+  }
+
+  .btn-square {
+    height: 3rem;
+    width: 3rem;
+    padding: 0;
+  }
+
+  .wrapper {
+    @apply mx-16 max-w-1344 md:mx-24 lg:mx-40 xl:mx-48 2xl:mx-auto;
+  }
+
+  .transition-fade {
+    @apply translate-y-2/4 opacity-0;
+  }
+
+  .transition-slide {
+    @apply translate-y-2/4;
+  }
+
+  .no-transition {
+    @apply transform-none opacity-100 transition-none;
+  }
+
+  .heading-6xl {
+    @apply font-sans text-56 font-semibold leading-72;
+  }
+  .heading-5xl {
+    @apply font-sans text-48 font-semibold leading-64;
+  }
+  .heading-4xl {
+    @apply font-sans text-40 font-semibold leading-56;
+  }
+  .heading-3xl {
+    @apply font-sans text-32 font-semibold leading-40;
+  }
+  .heading-2xl {
+    @apply font-sans text-24 font-semibold leading-32;
+  }
+  .heading-xl {
+    @apply font-sans text-20 font-semibold leading-28;
+  }
+  .heading-lg {
+    @apply font-sans text-18 font-semibold leading-24;
+  }
+  .label-semibold {
+    @apply font-sans text-16 font-semibold leading-20;
+  }
+  .body-sm-semibold {
+    @apply font-sans text-14 font-semibold leading-20;
+  }
+  .label-regular {
+    @apply font-sans text-16 font-normal leading-20;
+  }
+  .label-base-bold {
+    @apply font-sans text-16 font-bold leading-20;
+  }
+  .cta-base {
+    @apply font-sans text-16 font-semibold leading-20;
+  }
+  .cta-sm {
+    @apply font-sans text-14 font-semibold leading-16;
+  }
+  .cta-normal {
+    @apply font-sans text-16 font-normal leading-20;
+  }
+  .body-large {
+    @apply font-sans text-18 font-normal leading-28;
+  }
+  .body-base {
+    @apply font-sans text-16 font-normal leading-24;
+  }
+  .body-sm {
+    @apply font-sans text-14 font-normal leading-20;
+  }
+  .body-sm-mobile-xs {
+    @apply font-sans text-12 font-normal leading-16 md:text-14 md:leading-20;
+  }
+  .caption-xs {
+    @apply font-sans text-12 font-normal leading-16;
+  }
+  .caption-xs2 {
+    @apply font-sans text-10 font-normal leading-16;
+  }
+
+  .hamburger-menu {
+    @apply absolute block h-2 w-20 transform bg-grey-900 transition duration-500 ease-in-out;
+  }
+
+  .chevron-button {
+    box-shadow: 0px -1px 5px rgba(33, 33, 33, 0.06),
+      0px -1px 4px rgba(33, 33, 33, 0.05), 0px -1px 5px rgba(33, 33, 33, 0.12);
+  }
+
+  .sticky-button-div-shadow {
+    box-shadow: 0px -2px 4px rgba(38, 66, 82, 0.06),
+      0px -3px 4px rgba(38, 66, 82, 0.05), 0px -1px 5px rgba(38, 66, 82, 0.12);
+  }
+}
+
+.on-drag {
+  div:first-of-type {
+    @apply border-0 bg-grey-100;
+  }
+
+  div:nth-of-type(2) {
+    @apply border-grey-800;
+  }
+}
+
+body {
+  background-color: #e5e5e5;
+  color: #111111;
+}
+
+html {
+  font-size: 16px;
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  background-color: #e5e5e5;
+  @apply text-grey-800;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+html,
+body,
+#__next {
+  height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 4rem;
+  width: inherit;
+}
+
+.action-card-hover {
+  @media (hover) {
+    /* prevent click on iOS Safari Mobile to enable hover styling
+     * detection media before enabling style
+     */
+    @apply hover:drop-shadow-8dp;
+  }
+}
+
+.footer-link {
+  @apply flex items-center stroke-primary-100 py-4 text-primary-100 hover:stroke-white hover:text-white hover:underline hover:decoration-white;
+}
+
+.link {
+  @apply text-blue-600 hover:text-blue-800 hover:underline focus:text-blue-800;
+  @apply hover:cursor-pointer focus:underline;
+}
+
+table {
+  /* Allow for border-radius to be applied to table */
+  border-spacing: 0;
+  @apply border-separate;
+
+  &.border-color {
+    @apply border-[1px] border-grey-100;
+  }
+}
+
+/* Usage of box-shadow to apply a border-bottom to the bottom of all rows (excluding the last row) */
+table > thead > tr > th,
+table > tbody > tr:not(:last-child) > td {
+  @apply shadow-table;
+}
