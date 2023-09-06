@@ -3,6 +3,7 @@ import { FileUploader } from "react-drag-drop-files";
 import axios from "axios";
 import FileText from "../../assets/filetext";
 import InfoSvg from "../../assets/infoicon";
+import { Button } from "antd";
 
 const fileUploadChildren = (
   <div className="h-[420px] cursor-pointer border-2 border-dashed border-gray-400 hover:border-gray-800 focus:border-gray-800 mx-12">
@@ -24,8 +25,9 @@ const fileTypes = ["PDF"];
 
 const FileUpload: FunctionComponent = () => {
   const [dragStyling, setDragStyling] = useState<string>("");
-
   const [file, setFile] = useState(null);
+  const [files, setFiles] = useState([]);
+
   const handleUploadOnChange = (file: File) => {
     setFile(file);
     const formData = new FormData();
@@ -40,6 +42,17 @@ const FileUpload: FunctionComponent = () => {
       })
       .then((response) => {
         console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleFiles = () => {
+    axios
+      .get("http://localhost:8000/getallfiles")
+      .then((response) => {
+        setFiles(response.data.Contents);
       })
       .catch((error) => {
         console.log(error);
@@ -79,6 +92,19 @@ const FileUpload: FunctionComponent = () => {
           types={fileTypes}
         />
         <p>{file ? `File name: ${file.name}` : "no files uploaded yet"}</p>
+      </div>
+      <div className="border border-gray-900 my-10 flex flex-col items-center">
+        <Button className="border border-gray-900" onClick={handleFiles}>
+          Get files
+        </Button>
+        <h1>List of Files:</h1>
+        <ol>
+          {files.map((file, index) => (
+            <li key={index}>
+              <div>{file.Key}</div>
+            </li>
+          ))}
+        </ol>
       </div>
     </div>
   );
