@@ -1,13 +1,11 @@
 from fastapi import APIRouter, Query, File, UploadFile, HTTPException
 
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, PrimaryKeyConstraint
-from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, UniqueConstraint
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, Session
 
 
-router = APIRouter()
 # Create the base model for SQLAlchemy
 Base = declarative_base()
 
