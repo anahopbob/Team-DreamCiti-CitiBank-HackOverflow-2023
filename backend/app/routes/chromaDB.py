@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Query, File, UploadFile, HTTPException
+from fastapi.responses import JSONResponse
+
 from app.embeddings.MiniLM_embedder import MiniLM_embedder
 from app.services import chroma_service
 from app.models import chromaDocument 
 from app.services.summary import SummariseContext
-
-from fastapi.responses import JSONResponse
+from app.embeddings.imageToText import ImageToText
+from app.embeddings.imageEmbedding import ImageEmbedding
 
 import chromadb
 import uuid
@@ -28,6 +30,9 @@ from langchain.chains.question_answering import load_qa_chain
 Document = chromaDocument.Document
 DocumentParser = chroma_service.DocumentParser
 
+Image = chromaDocument.Image
+# imageToText = imageToText.ImageToText
+
 router = APIRouter()
 
 client = chromadb.PersistentClient(
@@ -37,6 +42,17 @@ collection = client.get_or_create_collection(
     name="documents",
     metadata={"hnsw:space": "cosine"}
 )
+
+imagetotext_collection = client.get_or_create_collection(
+    name="imagetotext",
+    metadata={"hnsw:space": "cosine"}
+)
+
+imagesembedding_collection = client.get_or_create_collection(
+    name="imageembedding",
+    metadata={"hnsw:space": "cosine"}
+)
+
 
 @router.post("/pdf-enroll")
 async def pdf_enroll(file: UploadFile):
@@ -52,11 +68,9 @@ async def pdf_enroll(file: UploadFile):
     # Determining file type
     if fileExtension == "pdf":
         try:
-            # extract text from pdf
+            # read pdf file
             pdfContent = await file.read()
-            text = extract_text(io.BytesIO(pdfContent))
         
-            # extract images from pdf
             # Create a PDF document object using PyMuPDF (Fitz)
             pdf_document = fitz.open(stream=pdfContent, filetype="pdf")
 
@@ -64,37 +78,54 @@ async def pdf_enroll(file: UploadFile):
             images_dir = "images"
             os.makedirs(images_dir, exist_ok=True)
 
-            # Initialize a counter for images
-            counter = 0
+            # Initialize a variable to store all the extracted text, with delimiter for separate pages and images
+            extractedText = [] 
 
             # Iterate through each page of the PDF
             for page_number in range(len(pdf_document)):
                 page = pdf_document.load_page(page_number)
-                
-                # Extract images from the page
+
+                # Extract text from the page
+                pageText = page.get_text()
+
+                # Check if the page contains images and extract all images (using OCR to detect images)
                 images = page.get_images(full=True)
+
+                # If page contains images, add a unique image indicator to the extracted text for that particular page only
+                if images:
+                    for idx, image in enumerate(images):
+                        xref = image[0]
+                        base_img = pdf_document.extract_image(xref)
+                        image_data = base_img["image"]
+                        extension = base_img["ext"]
+
+                        # renaming the image file accordingly with a unique id for text extractation formatting
+                        uniqueId = str(uuid.uuid4())[:]
+                        image_id = f"<?% type=image,object_id={uniqueId} %>"
+
+                        # for storing in s3 bucket
+                        # image_name = f"type=image,object_id={uniqueId}.{extension}"
+
+                        # currently saves to images folder in backend root directory (to be changed to s3 bucket)
+                        # with open(test_image_id, "wb") as image_file:
+                        #     image_file.write(image_data)
+
+                        # Add image indicator to the extracted text
+                        pageText = image_id + pageText + image_id
                 
-                for idx, image in enumerate(images):
-                    xref = image[0]
-                    base_img = pdf_document.extract_image(xref)
-                    image_data = base_img["image"]
-                    extension = base_img["ext"]
-                    image_filename = os.path.join(images_dir, f"image_{counter}.{extension}")
-
-                    # currently saves to images folder in backend root directory (to be changed once s3 set up)
-                    with open(image_filename, "wb") as image_file:
-                        image_file.write(image_data)
-
-                    counter += 1
-            
-            # Close the PDF document
+                # Add the extracted text to the overall extracted text
+                extractedText.append(pageText)
+                
+            # Close the PDF document after iteration completed
             pdf_document.close()
         
-            return {"extracted text": text, "image count": counter}
+            return {"extracted text": ''.join(extractedText)}
         
+        # catching and returning any errors
         except Exception as e:
             return {"error": str(e)}
-        
+    
+    # raising HTTP exception if file is not a PDF
     else:
         raise HTTPException(status_code=400, detail="Uploaded file is not a PDF")
     
@@ -122,7 +153,7 @@ def enroll(document: Document)->None:
 
         # Function to get content_id (replace with your actual logic)
 
-        # Create metadata list, add in object_id and department
+        # Create metadata list
         metadata = [
             {
                 "department": department,
@@ -131,8 +162,7 @@ def enroll(document: Document)->None:
             }
             for idx, _ in enumerate(range(len(texts)))
         ]
-        
-        # Generating unique IDs for each document
+           # Generating unique IDs for each document
         excerpt_ids = [str(uuid.uuid4()) for x in range(len(texts))]
 
         # Associating the object_id with the excerpt_id (using a NoSQL way)
@@ -141,7 +171,6 @@ def enroll(document: Document)->None:
         }
         print(f"This is the pairing that should be saved: {id_pairing}")
 
-        # Added into vectordb
         collection.add(
             embeddings=embeddings,
             documents=texts,
@@ -152,6 +181,94 @@ def enroll(document: Document)->None:
         return JSONResponse(content={"message": "Successfully enrolled"}, status_code=200)
     except Exception as e:
         return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
+
+
+
+
+
+@router.post("/enroll-image-caption")
+def enroll_image_caption(image: Image):
+    """
+    Given a particular department and image, get embeddings for the image 
+    and enroll inside the DB.
+    """
+    # Getting info from POST
+    image_dict = image.dict()
+    id = image_dict.get("id","")
+    file = image_dict.get("file","")
+    department = image_dict.get("department","")
+
+    # get text of the image
+    image_obj = ImageToText()
+    image_text = image_obj.getImageToText(file)
+
+    # ============ Start AI Portion==============
+    # Get embeddings
+    custom_embeddings = MiniLM_embedder()
+    embeddings = custom_embeddings(image_text)
+
+    # Function to get content_id (replace with your actual logic)
+
+    # Create metadata list
+    metadata = [
+        {
+            "department": department,
+            "object_id": id,
+            "content_id": idx
+        }
+        for idx, _ in enumerate(range(len(image_text)))
+    ]
+    imagetotext_collection.add(
+        embeddings=embeddings,
+        documents=image_text,
+        metadatas=metadata,
+        ids=[str(uuid.uuid4()) for x in range(len(image_text))] # Generated by us uuid4.uuid()
+    )
+    # ============Start AI Portion==============
+
+    return None
+
+
+
+@router.post("/enroll-image-embedding")
+def enroll_image_embedding(image: Image)->None:
+    """
+    Given a particular department and image, get embeddings for the image 
+    and enroll inside the DB.
+    """
+    # Getting info from POST
+    image_dict = image.dict()
+    id = image_dict.get("id","")
+    file = image_dict.get("file","")
+    department = image_dict.get("department","")
+
+    # get text of the image
+    
+    # ============ Start AI Portion==============
+    # Get embeddings
+   
+    embeddings = ImageEmbedding.get_image_embeddings(file)
+
+    # Create metadata list
+    metadata = [
+        {
+            "department": department,
+            "object_id": id,
+            "content_id": idx
+        }
+        for idx, _ in enumerate(range(len(embeddings)))
+    ]
+
+
+    imagesembedding_collection.add(
+        embeddings=embeddings,
+        documents=file,
+        metadatas=metadata,
+        ids=[str(uuid.uuid4()) for x in range(len(embeddings))] # Generated by us uuid4.uuid()
+    )
+    # ============Start AI Portion==============
+
+    return None
 
 
 @router.get("/search/")
@@ -171,6 +288,7 @@ def search_items(
             n_results=5,
             where={"department": department}
         )
+   
 
     if len(results) == 0:
         return JSONResponse(content={"message": "No results found"}, status_code=200)
@@ -209,4 +327,5 @@ def delete_object(
         return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
 
 # =============== Image Related Endpoints =================
+
 

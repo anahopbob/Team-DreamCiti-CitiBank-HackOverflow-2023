@@ -1,6 +1,5 @@
-import React, { useRef, useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-
+import "../styles/globals.scss";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 
