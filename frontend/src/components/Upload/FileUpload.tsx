@@ -1,5 +1,6 @@
 import { FunctionComponent, useState } from "react";
 import { FileUploader } from "react-drag-drop-files";
+import axios from "axios";
 import FileText from "../../assets/filetext";
 import InfoSvg from "../../assets/infoicon";
 
@@ -27,7 +28,22 @@ const FileUpload: FunctionComponent = () => {
   const [file, setFile] = useState(null);
   const handleUploadOnChange = (file: File) => {
     setFile(file);
+    const formData = new FormData();
+    formData.append("file", file);
+    console.log(formData);
     console.log(file);
+    axios
+      .post("http://localhost:8000/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   const handleOnDraggingStateChange = (dragging: boolean) => {
