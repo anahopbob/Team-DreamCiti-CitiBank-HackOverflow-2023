@@ -4,6 +4,8 @@ from typing import List
 class FastAPI_ObjectInfo(BaseModel):
     ObjectID: str
     ObjectName: str
+    Department: str
+    Classification: str
     Upvotes: int
     Downvotes: int
     isLink: bool

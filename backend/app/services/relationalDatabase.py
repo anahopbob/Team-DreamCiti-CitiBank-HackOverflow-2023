@@ -68,6 +68,8 @@ class ObjectInfo(Base):
 
     ObjectID = Column(String(64))
     ObjectName = Column(String(255))
+    Department = Column(String(128)) 
+    Classification = Column(String(32)) # Restricted, Unclassified
     Upvotes = Column(Integer, default=0)
     Downvotes = Column(Integer, default=0)
     isLink = Column(Boolean, default=0)
