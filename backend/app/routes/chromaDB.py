@@ -169,7 +169,7 @@ def enroll(document: Document)->None:
         id_pairing = {
             id : excerpt_ids 
         }
-        print(f"This is the pairing that should be saved: {id_pairing}")
+        print(f"This is the pairing that should be saved: {id_pairing}, pass ID and list")
 
         collection.add(
             embeddings=embeddings,

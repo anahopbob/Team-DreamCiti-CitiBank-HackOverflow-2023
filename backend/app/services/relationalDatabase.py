@@ -5,6 +5,7 @@ from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Uniqu
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 
+# THis includes the initialized RDBS function and the Objects for the MySQL database
 
 # Create the base model for SQLAlchemy
 Base = declarative_base()
@@ -19,37 +20,21 @@ def initialize_rdbs():
     connection = engine.connect()
 
     # Close the connection to the MySQL server
-    connection.close()
 
     Base.metadata.create_all(bind=engine)
 
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     session = SessionLocal()
 
+    connection.close()
     return session
 
-# def insert_dummy_data(session):
-
-#     # Insert data into Object_Table
-#     object1 = Object_Table(ObjectID='1', ObjectName='Object 1', Department='Dept 1', ExcerptID='1')
-#     object2 = Object_Table(ObjectID='2', ObjectName='Object 2', Department='Dept 2', ExcerptID='2')
-#     object3 = Object_Table(ObjectID='3', ObjectName='Object 3', Department='Dept 1', ExcerptID='3')
-
-#     # Insert data into ObjectVotes
-#     vote1 = ObjectVotes(ObjectID='1', Upvotes=5, Downvotes=2)
-#     vote2 = ObjectVotes(ObjectID='2', Upvotes=10, Downvotes=1)
-#     vote3 = ObjectVotes(ObjectID='3', Upvotes=3, Downvotes=0)
-
-#     session.add_all([object1, object2, object3, vote1, vote2, vote3])
-#     session.commit()
-#     session.close()
-
-
+initialize_rdbs()
 
 # ObjectID | ExcerptID | 
 # If it is a PDF, the object will relate to the PDF in S3, isLink = 0, URL = None
 # If it is a Link, the objectID will be a random uuid. isLink = 1, URL = link
-class ObjectExcerptTable(Base):
+class ObjectExcerptPair(Base):
     """
     This table stores
         - ObjectID: This ID refers to the ID of the object in S3, or a random UUID if it is a link
@@ -57,13 +42,13 @@ class ObjectExcerptTable(Base):
 
     The composite primary key is ObjectID and ExcerptID
     """
-    __tablename__ = "ObjectTable"
+    __tablename__ = "ObjectExcerptPair"
 
     ObjectID = Column(String(64))
     ExcerptID = Column(String(64))
  
     ObjectID = Column(String(64), ForeignKey('ObjectInfo.ObjectID'))
-    object_entries = relationship('Object_Table', backref='votes')
+    object_entries = relationship('ObjectInfo', backref='votes')
 
     __table_args__ = (
         PrimaryKeyConstraint('ObjectID', 'ExcerptID'),
@@ -79,7 +64,7 @@ class ObjectInfo(Base):
         - Downvotes: This is the number of downvotes that the object has
     """
 
-    __tablename__ = "ObjectVotes"
+    __tablename__ = "ObjectInfo"
 
     ObjectID = Column(String(64))
     ObjectName = Column(String(255))
