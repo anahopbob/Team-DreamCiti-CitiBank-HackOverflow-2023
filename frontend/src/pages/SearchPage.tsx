@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import '../assets/styles/App.css'
 import Searchbar from '../components/Searchbar';
-function App() {
+function Search() {
     const departments = ['Finance', 'Sales', 'Marketing', 'HR', 'IT', 'Operations'];
     const [dept, setDept] = useState("");
     const [data, setData] = useState(null);
@@ -48,4 +48,4 @@ function App() {
     )
 }
 
-export default App;
+export default Search;

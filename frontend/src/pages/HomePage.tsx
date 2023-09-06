@@ -1,8 +1,7 @@
 const Home = () => {
   return (
-    <div>
-      <h1>Home</h1>
-      <p>Home page content</p>
+    <div className="flex justify-center items-center h-screen">
+        Welcome to DreamCiti
     </div>
   );
 };
