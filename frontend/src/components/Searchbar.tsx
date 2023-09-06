@@ -20,7 +20,7 @@ function Searchbar({ onSearch, departments }: SearchbarProps) {
         setSearchValue('');
     };
     return (
-        <form className="max-w px-40">
+        <form className="w-3/5">
             <div className="relative ">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -43,7 +43,7 @@ function Searchbar({ onSearch, departments }: SearchbarProps) {
                     value={searchValue}
                     onChange={handleInputChange}
                 />
-                <button onClick={handleSubmit} className="absolute top-0 bottom-0 right-0 px-4 py-3  text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:bg-indigo-700">Submit</button>
+                <button onClick={handleSubmit} className="absolute top-0 bottom-0 right-0 px-4 py-3 outline-none text-sm font-semibold text-white bg-indigo-600 rounded-r-md hover:bg-indigo-500 focus:bg-indigo-700">Submit</button>
             </div>
             <div className="relative w-1/2">
                 <span>
