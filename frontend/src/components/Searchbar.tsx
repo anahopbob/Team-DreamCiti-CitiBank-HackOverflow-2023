@@ -6,22 +6,30 @@ interface SearchbarProps {
 function Searchbar({ onSearch, departments }: SearchbarProps) {
     const [searchValue, setSearchValue] = useState('');
     const [dept, setDept] = useState(departments[0]);
+
     const handleInputChange = (e: any) => {
         setSearchValue(e.target.value);
     };
+
+    // Function to capitalize the first letter
+    const capitalizeFirstLetter = (str: string) => {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    };
+
     const changeDepartment = (e: any) => {
-        
         setDept(e.target.value);
     };
+
     const handleSubmit = (e: any) => {
         e.preventDefault();
         // Call the callback function with the searchValue
         onSearch(searchValue, dept);
         setSearchValue('');
     };
+    
     return (
         <form className="w-3/5">
-            <div className="relative ">
+            <div className="relative my-6">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="absolute top-0 bottom-0 w-6 h-6 my-auto text-gray-400 left-3"
@@ -45,7 +53,7 @@ function Searchbar({ onSearch, departments }: SearchbarProps) {
                 />
                 <button onClick={handleSubmit} className="absolute top-0 bottom-0 right-0 px-4 py-3 outline-none text-sm font-semibold text-white bg-indigo-600 rounded-r-md hover:bg-indigo-500 focus:bg-indigo-700">Submit</button>
             </div>
-            <div className="relative w-1/2">
+            <div className="relative w-1/2 my-8">
                 <span>
                     Department:
                 </span>
@@ -56,7 +64,7 @@ function Searchbar({ onSearch, departments }: SearchbarProps) {
                 >
                     {departments.map((option, index) => (
                         <option key={index} value={option}>
-                            {option}
+                            {capitalizeFirstLetter(option)}
                         </option>
                     ))}
                 </select>

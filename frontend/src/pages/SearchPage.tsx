@@ -78,7 +78,7 @@ function Search() {
             });
     };
     return (
-        <div className='h-screen'>
+        <div className='min-h-screen'>
             <div className="flex justify-center items-center flex-col">
                 <Searchbar onSearch={handleSearch} departments={departments} />
             </div>
@@ -87,13 +87,15 @@ function Search() {
                 {tempArray && (
                     <div className='flex justify-center items-center flex-col'>
                         {tempArray.map((item, index) => (
-                            <ItemCard key={index} department={item.department} text={item.text}/>
+                            <ItemCard key={index} department={item.department} text={item.text} />
                         ))}
                     </div>
                 )}
                 <div>
                     {empty ? (
-                        <p>Please enter text in the input field before searching.</p>
+                        <div className="badge badge-error gap-2 text-xl p-6">
+                            Please enter text in the input field before searching.
+                        </div>
                     ) : (
                         <span></span>
                     )}

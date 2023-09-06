@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons'; // Import the specific icon you want to use
+
 
 interface Data {
     department: string;
@@ -19,8 +22,18 @@ const ItemCard = (props: Data) => {
             <div className="card-body">
                 <p>{props.text}</p>
             </div>
-            <div>
-
+            <div className='flex justify-end mx-20 my-10'>
+                <button className="btn btn-outline">Go To</button>
+                <div className="join ml-6">
+                    
+                    <button className="join-item btn">
+                        <FontAwesomeIcon icon={faMinus} bounce />
+                    </button>
+                    <button className="join-item btn">1</button>
+                    <button className="join-item btn">
+                        <FontAwesomeIcon icon={faPlus} bounce />
+                    </button>
+                </div>
             </div>
         </div>
     );

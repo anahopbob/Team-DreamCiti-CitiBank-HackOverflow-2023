@@ -8,9 +8,9 @@ export const Header: React.FC = () => {
     <div className="navbar my-4">
       <div className="flex-1">
         <Link to={Routes.Home}>
-          <button className="btn btn-square mx-5 hover:bg-gray-300">
+          <div className=" mx-5 w-40">
             <img src={citi} className="inline-block stroke-current" alt="Your SVG" />
-          </button>
+          </div>
         </Link>
       </div>
       <div className="flex-none content-end">
