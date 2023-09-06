@@ -10,6 +10,7 @@ function Searchbar({ onSearch, departments }: SearchbarProps) {
         setSearchValue(e.target.value);
     };
     const changeDepartment = (e: any) => {
+        
         setDept(e.target.value);
     };
     const handleSubmit = (e: any) => {
