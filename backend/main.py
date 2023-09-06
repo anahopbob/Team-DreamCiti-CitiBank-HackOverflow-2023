@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routes import chromaDB, s3Bucket # Import your API route modules
+from app.routes import chromaDB, s3Bucket, mysqlDB # Import your API route modules
 from fastapi.middleware.cors import CORSMiddleware
 
 # Initialize FastAPI
@@ -29,12 +29,9 @@ async def root():
 # Dependency injection configuration
 app.include_router(chromaDB.router, prefix="", tags=["chromaDB"])
 app.include_router(s3Bucket.router, prefix="", tags=["s3Bucket"])
-
-# Initialize database
-
+app.include_router(mysqlDB.router, prefix="", tags=["mysqlDB"])
 
 # Custom middleware
-
 
 if __name__ == "__main__":
     import uvicorn
