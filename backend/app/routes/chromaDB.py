@@ -325,26 +325,30 @@ def summarise_items(
     except Exception as e:
         return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
     
-@router.post("/delete")
-def delete_object(
-        object_id: str,
-        association: List[str] = None
+# @router.post("/delete")
+def delete_object_from_chromadb(
+        object_excerpt_list: List[dict]
     ):
     """
+    THIS ROUTE HAS BEEN REFACTORED TO BE USED IN mysqlDB.py.
+    IT WILL NOT BE CALLED FROM THE ROUTER ABOVE.
     Given an object_id that corrosponds to the one inside S3,
     delete all related embeddings inside ChromaDB.
     Currently, association is hard coded.
     """
     # Connect to  bucket to get association list 
-    if len(association) == 0:
-        return JSONResponse(content={"message": f"Object {object_id} is not associated with anything!"}, status_code=200)
+    if len(object_excerpt_list) == 0:
+        return []
     try:
+        association = []
+        for pair in object_excerpt_list:
+            association.append(pair["excerpt_id"])
         collection.delete(
             ids=association
         )
-        return JSONResponse(content={"message": f"{len(association)} embeddings associated with {object_id} have been deleted!"}, status_code=200)
+        return len(association)
     except Exception as e:
-        return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
+        return None
 
 # =============== Image Related Endpoints =================
 
