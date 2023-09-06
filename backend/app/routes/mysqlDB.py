@@ -50,6 +50,64 @@ def get_object_excerpt_pairs(
             "message": "Object excerpt pairs retrieval failed",
             "error": str(e)
         }
+    
+@router.get("/objectInfo/all")
+def get_all_object_info(
+    session: Session = Depends(get_db_session)
+):
+    """
+    Get all object info from the database.
+    """
+    try:
+        object_info = session.query(ObjectInfo).all()
+        session.close()
+        return object_info
+    except Exception as e:
+        return {
+            "message": "Object info retrieval failed",
+            "error": str(e)
+        }
+    
+@router.put("/upvote/{object_id}")
+def upvote_object(
+    object_id: str,
+    session: Session = Depends(get_db_session)
+):
+    """
+    Upvote an object
+    """
+    try:
+        object_info = session.query(ObjectInfo).filter(ObjectInfo.ObjectID == object_id).first()
+        object_info.Upvotes += 1
+        session.commit()
+        session.close()
+        return {"message": "Object upvoted"}
+    except Exception as e:
+        return {
+            "message": "Object upvote failed",
+            "error": str(e)
+        }
+    
+@router.put("/downvote/{object_id}")
+def downvote_object(
+    object_id: str,
+    session: Session = Depends(get_db_session)
+):
+    """
+    Downvote an object
+    """
+    try:
+        object_info = session.query(ObjectInfo).filter(ObjectInfo.ObjectID == object_id).first()
+        object_info.Downvotes += 1
+        session.commit()
+        session.close()
+        return {"message": "Object downvoted"}
+    except Exception as e:
+        return {
+            "message": "Object downvote failed",
+            "error": str(e)
+        }
+
 
 @router.post("/objectInfo")
 def insert_object_info(
@@ -126,7 +184,8 @@ def delete_object(
     session.close()
     return {"message": "Object deletion failed."}
 
-# === Helper for Delete Function ===
+# === Start of Helper for Delete Function ===
+
 def helper_get_object_excerpt_pairs(
     object_id: str,
     session: Session = Depends(get_db_session)
@@ -171,3 +230,5 @@ def helper_delete_object_info(
         return True
     except Exception as e:
         return False
+    
+# === End of Helper for Delete Function ===
