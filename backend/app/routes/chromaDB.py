@@ -28,10 +28,12 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.vectorstores import ElasticVectorSearch, Pinecone, Weaviate, FAISS
 from langchain.chains.question_answering import load_qa_chain
 
+import urllib.request
+
 Document = chromaDocument.Document
 DocumentParser = chroma_service.DocumentParser
 
-Image = chromaDocument.Image
+ImageDict = chromaDocument.Image
 # imageToText = imageToText.ImageToText
 
 router = APIRouter()
@@ -207,7 +209,7 @@ def enroll(document: Document)->None:
 
 
 @router.post("/enroll-image-caption")
-def enroll_image_caption(image: Image):
+def enroll_image_caption(image: ImageDict):
     """
     Given a particular department and image, get embeddings for the image 
     and enroll inside the DB.
@@ -220,8 +222,12 @@ def enroll_image_caption(image: Image):
 
     # get text of the image
     image_obj = ImageToText()
+    if file.startswith('http'):
+        file = urllib.request.urlopen(file)
+  
     image_text = image_obj.getImageToText(file)
 
+    return image_text
     # ============ Start AI Portion==============
     # Get embeddings
     custom_embeddings = MiniLM_embedder()
@@ -251,7 +257,7 @@ def enroll_image_caption(image: Image):
 
 
 @router.post("/enroll-image-embedding")
-def enroll_image_embedding(image: Image)->None:
+def enroll_image_embedding(image: ImageDict)->None:
     """
     Given a particular department and image, get embeddings for the image 
     and enroll inside the DB.
@@ -356,6 +362,6 @@ def delete_object_from_chromadb(
 @router.get("/webscrape")
 def get_webscrape(website: str = Query(None, description="Website to scrape")):
     results = WebScrape.getWebScrape(website)
-    document = Document(id=website, text=results, department="test")
-    enroll(document)
+    # document = Document(id=website, text=results, department="test")
+    # enroll(document)
     return results
