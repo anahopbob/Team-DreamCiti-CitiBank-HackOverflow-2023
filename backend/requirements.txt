@@ -153,3 +153,5 @@ Werkzeug==2.3.7
 win32-setctime==1.1.0
 wrapt==1.15.0
 yarl==1.9.2
+zipp==3.16.2
+selenium==4.12.0
