@@ -6,10 +6,10 @@ function Upload() {
   // const [data, setData] = useState(null);
 
   return (
-    <>
+    <div className="h-screen">
       <div>Upload page</div>
       <FileUpload />
-    </>
+    </div>
   );
 }
 

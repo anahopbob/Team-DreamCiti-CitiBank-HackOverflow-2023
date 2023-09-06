@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import '../assets/styles/App.css'
 import Searchbar from '../components/Searchbar';
+import ItemCard from '../components/ItemCard';
 
 interface Data {
     ids: string[][];
@@ -15,33 +16,42 @@ interface Metadata {
     object_id: string;
 }
 
-
+interface MyObject {
+    department: string;
+    text: string;
+}
 
 function Search() {
-    const departments = ['any','finance', 'sales', 'marketing', 'hr', 'it', 'operations'];
+    const departments = ['any', 'finance', 'sales', 'marketing', 'hr', 'it', 'operations'];
+    const [tempArray, setTempArray] = useState<MyObject[]>([]);
     const [dept, setDept] = useState("");
-    const [data, setData] = useState<Data | null>(null);
+    // const [data, setData] = useState<Data | null>(null);
     const [searchItem, setSearchItem] = useState('');
     const [empty, setEmpty] = useState(false);
     // Callback function to handle the search item
     const handleSearch = (item: string, department: string) => {
         if (item === '') {
-            setData(null);
+            setTempArray([]);
             setEmpty(true);
             return;
         }
         setEmpty(false);
         setSearchItem(item);
-        setDept(department);
+        // setDept(department);
 
         search(item, department);
     };
 
     const search = (query: string, department: string) => {
 
-
+        var apiUrl = ''
         // Define the API endpoint URL
-        const apiUrl = 'http://127.0.0.1:8000/search/?department=' + department + '&query=' + query; // Replace with your API endpoint
+        if (department === "any") {
+            apiUrl = 'http://127.0.0.1:8000/search/?query=' + query;
+        }
+        else {
+            apiUrl = 'http://127.0.0.1:8000/search/?department=' + department + '&query=' + query; // Replace with your API endpoint
+        }
         // const apiUrl = 'http://127.0.0.1:8000/search/?department=finance&query=123131'
         // Make the API call
         fetch(apiUrl)
@@ -52,9 +62,15 @@ function Search() {
                 return response.json();
             })
             .then((responseData: Data) => {
-                console.log(apiUrl)
-                setData(responseData);
-                console.log(responseData);
+                var temp = []
+                for (let i = 0; i < responseData.documents[0].length; i++) {
+                    var dict: MyObject = {
+                        "department": responseData.metadatas[0][i].department,
+                        "text": responseData.documents[0][i],
+                    }
+                    temp.push(dict);
+                }
+                setTempArray(temp);
             })
             .catch((err) => {
                 console.log(err.message);
@@ -62,30 +78,30 @@ function Search() {
             });
     };
     return (
-        <>
-            <div className="">
+        <div className='h-screen'>
+            <div className="flex justify-center items-center flex-col">
                 <Searchbar onSearch={handleSearch} departments={departments} />
-                <p>Search Item: {searchItem}</p>
             </div>
-            {empty ? (
-                <p>Please enter something in the input field.</p>
-            ) : (
-                <span></span>
-            )}
-            <div>
-                Data is:{JSON.stringify(data, null, 2)}
-                Documents are:
-                {data && (
-                    <div>
-                        <ul>
-                            {data.documents.map((document, index) => (
-                                <li key={index}>{document}</li>
-                            ))}
-                        </ul>
+
+            <div className='flex justify-center items-center flex-col my-4'>
+                {tempArray && (
+                    <div className='flex justify-center items-center flex-col'>
+                        {tempArray.map((item, index) => (
+                            <ItemCard key={index} department={item.department} text={item.text}/>
+                        ))}
                     </div>
                 )}
+                <div>
+                    {empty ? (
+                        <p>Please enter text in the input field before searching.</p>
+                    ) : (
+                        <span></span>
+                    )}
+                </div>
+
             </div>
-        </>
+
+        </div>
     )
 }
 
