@@ -20,6 +20,9 @@ export const Header: React.FC = () => {
         <Link to={Routes.Upload}>
           <button className="btn normal-case text-xl w-40 mx-10 hover:bg-gray-300">Upload</button>
         </Link>
+        <Link to={Routes.Edit}>
+          <button className="btn normal-case text-xl w-40 mx-10 hover:bg-gray-300">Edit</button>
+        </Link>
       </div>
     </div>
   </div>;
