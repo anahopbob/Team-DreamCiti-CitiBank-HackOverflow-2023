@@ -148,20 +148,17 @@ function Search() {
         return response.json();
       })
       .then((responseData: Data) => {
-        console.log("RESPONSE SDATA" + JSON.stringify(responseData));
         let temp: MyObject[] = [];
         for (let i = 0; i < responseData.results.documents[0].length; i++) {
           if (responseData.results.documents[0][i] === "") {
             continue;
           }
-          console.log("RESULTS" + responseData.results.metadatas[0][i]);
           let dict: MyObject = {
             objectId: responseData.results.metadatas[0][i].object_id,
             department: responseData.results.metadatas[0][i].department,
             text: responseData.results.documents[0][i],
             contentId:  responseData.results.metadatas[0][i].content_id,
           };
-          console.log("CONTENT"+ dict.contentId)
           temp.push(dict);
         }
         setTempArray(temp);
@@ -216,7 +213,7 @@ function Search() {
             </div>
           </div>
         )}
-        {imgArray && (
+        {/* {imgArray && (
           <div className="card bg-base-100 shadow-xl w-3/4 py-4 my-2 border">
             <span className="card-title ml-4">Images for: {searchItem}</span>
             <div className="card-body">
@@ -233,10 +230,10 @@ function Search() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {tempArray.length !== 0 && (
-          <div className="flex justify-center items-center flex-col">
+          <div className="flex justify-center items-center flex-col w-full">
             <div>
               <h1 className="card-title ml-4 py-10">Documents</h1>
             </div>

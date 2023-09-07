@@ -66,7 +66,6 @@ const UrlInput: FunctionComponent = () => {
         department: dept,
       })
       .then((response) => {
-        console.log(response.data);
         setWebScrapeState((prev: webScrapes) => ({
           ...prev,
           [url]: { url },
