@@ -1,13 +1,25 @@
 from fastapi import APIRouter, Depends
 from app.services.relationalDatabase import initialize_rdbs, ObjectInfo, ObjectExcerptPair
 from sqlalchemy.orm import Session  # Import Session
-
-from app.routes.chromaDB import delete_object_from_chromadb
+from typing import List
+# from app.routes.chromaDB import delete_object_from_chromadb
 from app.models.FastAPI_MySQL_Objects import FastAPI_ObjectInfo, FastAPI_ObjectExcerptPairs
 
 router = APIRouter()
 
+
+import chromadb
+
+client = chromadb.PersistentClient(
+    path="db/chroma.db"
+)   
+collection = client.get_or_create_collection(
+    name="documents",
+    metadata={"hnsw:space": "cosine"}
+)
+
 def get_db_session():
+    print("Getting db session")
     session = initialize_rdbs()
     # insert_dummy_data(session)  # You may want to call this only once when initializing the app
     try:
@@ -109,28 +121,31 @@ def downvote_object(
         }
 
 
-@router.post("/objectInfo")
+# @router.post("/objectInfo")
 def insert_object_info(
-    object_info: FastAPI_ObjectInfo,
+    object_info: dict,
     session: Session = Depends(get_db_session)
 ):
     """
     Insert a single object info into the database.
     """
+    print("Triggered")
     try:
         object_info_entry = ObjectInfo(
-            ObjectID=object_info.ObjectID,
-            ObjectName=object_info.ObjectName,
-            Upvotes=object_info.Upvotes,
-            Downvotes=object_info.Downvotes,
-            Department=object_info.Department,
-            Classification=object_info.Classification,
-            isLink=object_info.isLink,
-            URL=object_info.URL
+            ObjectID=object_info["ObjectID"],
+            ObjectName=object_info["ObjectName"],
+            Upvotes=object_info["Upvotes"],
+            Downvotes=object_info["Downvotes"],
+            Department=object_info["Department"],
+            Classification=object_info["Classification"],
+            isLink=object_info["isLink"],
+            URL=object_info["URL"]
         )
+        session = get_db_session()    
+        session = next(session)
         session.add(object_info_entry)
         session.commit()
-        session.close()
+        # session.close()
         return {"message": "Object info successfully inserted"}
     except Exception as e:
         return {
@@ -139,29 +154,39 @@ def insert_object_info(
         }
 
 
-@router.post("/objectExcerptPairs")
+# @router.post("/objectExcerptPairs")
 def insert_object_excerpt_pairs(
-    pairings: FastAPI_ObjectExcerptPairs,
+    id,
+    excerpt_ids,
+    # pairings: FastAPI_ObjectExcerptPairs,
     session: Session = Depends(get_db_session)
 ):
+    """
+    Refactored to be called by chromaDB.py
+    """
     try:
         pairs = []
-        for pair in pairings.ExcerptIDs:
+        for pair in excerpt_ids:
             # Create a new object excerpt pair
             object_excerpt_pair = ObjectExcerptPair(
-                ObjectID=pairings.ObjectID,
+                ObjectID=id,
                 ExcerptID=pair
             )
             pairs.append(object_excerpt_pair)
+        session = get_db_session()    
+        session = next(session)
+
         session.add_all(pairs)
         session.commit()
+        print("HERE")
         session.close()
-        return {"message": "Object info successfully inserted"}
+        return True
     except Exception as e:
-        return {
-            "message": "Object excerpt pairs insertion failed",
-            "error": str(e)
-        }
+        return False
+    # return {
+        #     "message": "Object excerpt pairs insertion failed",
+        #     "error": str(e)
+        # }
 
 @router.delete("/delete_object/{object_id}")
 def delete_object(
@@ -232,5 +257,29 @@ def helper_delete_object_info(
         return True
     except Exception as e:
         return False
+    
+def delete_object_from_chromadb(
+        object_excerpt_list: List[dict]
+    ):
+    """
+    THIS ROUTE HAS BEEN REFACTORED TO BE USED IN mysqlDB.py.
+    IT WILL NOT BE CALLED FROM THE ROUTER ABOVE.
+    Given an object_id that corrosponds to the one inside S3,
+    delete all related embeddings inside ChromaDB.
+    Currently, association is hard coded.
+    """
+    # Connect to  bucket to get association list 
+    if len(object_excerpt_list) == 0:
+        return []
+    try:
+        association = []
+        for pair in object_excerpt_list:
+            association.append(pair["excerpt_id"])
+        collection.delete(
+            ids=association
+        )
+        return len(association)
+    except Exception as e:
+        return None
     
 # === End of Helper for Delete Function ===
