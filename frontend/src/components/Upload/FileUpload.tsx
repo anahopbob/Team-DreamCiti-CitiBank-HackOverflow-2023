@@ -35,7 +35,7 @@ const FileUpload: FunctionComponent = () => {
     console.log(formData);
     console.log(file);
     axios
-      .post("http://localhost:8000/upload", formData, {
+      .post("http://localhost:8000/pdf-enroll", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
