@@ -123,6 +123,8 @@ def insert_object_info(
             ObjectName=object_info.ObjectName,
             Upvotes=object_info.Upvotes,
             Downvotes=object_info.Downvotes,
+            Department=object_info.Department,
+            Classification=object_info.Classification,
             isLink=object_info.isLink,
             URL=object_info.URL
         )
