@@ -3,18 +3,22 @@ import '../assets/styles/App.css'
 import Searchbar from '../components/Searchbar';
 import ItemCard from '../components/ItemCard';
 
-interface Data {
+interface Results {
     ids: string[][];
     distances: number[][];
     metadatas: Metadata[][];
     embeddings: any;
     documents: string[][];
-}
-
-interface Metadata {
+  }
+  
+  interface Metadata {
     department: string;
     object_id: string;
-}
+  }
+  
+  interface Data {
+    results: Results;
+  }
 
 interface MyObject {
     department: string;
@@ -62,11 +66,12 @@ function Search() {
                 return response.json();
             })
             .then((responseData: Data) => {
+                console.log(responseData.results.documents);
                 var temp = []
-                for (let i = 0; i < responseData.documents[0].length; i++) {
+                for (let i = 0; i < responseData.results.documents[0].length; i++) {
                     var dict: MyObject = {
-                        "department": responseData.metadatas[0][i].department,
-                        "text": responseData.documents[0][i],
+                        "department": responseData.results.metadatas[0][i].department,
+                        "text": responseData.results.documents[0][i],
                     }
                     temp.push(dict);
                 }
