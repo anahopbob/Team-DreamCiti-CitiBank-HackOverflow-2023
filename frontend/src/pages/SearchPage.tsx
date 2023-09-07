@@ -203,10 +203,7 @@ function Search() {
                             </h1>
                         </div>
                     </div>
-
-
                 )}
-
                 {imgArray && (
                     <div className="card bg-base-100 shadow-xl w-3/4 py-4 my-2 border">
                         <span className="card-title ml-4">
