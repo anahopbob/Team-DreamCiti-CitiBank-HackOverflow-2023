@@ -69,9 +69,7 @@ const FileUpload: FunctionComponent = () => {
 
   return (
     <div>
-      <div
-        className={`rounded-lg border border-blue-700 bg-blue-100 my-20 mx-12`}
-      >
+      <div className="rounded-lg border border-blue-700 bg-blue-100 my-10 mx-12">
         <div className="flex items-center">
           <div className="py-2 pl-4 pr-6">
             <InfoSvg />

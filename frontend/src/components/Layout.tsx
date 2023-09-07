@@ -5,9 +5,7 @@ import React from 'react'
 const Layout = () => {
   return (
     <div className="">
-      <div>
-        <Header />
-      </div>
+      <Header />
       <Outlet />
       <Footer />
     </div>
