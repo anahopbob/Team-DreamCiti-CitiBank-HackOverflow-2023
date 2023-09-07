@@ -461,9 +461,15 @@ def delete_object_from_chromadb(
 
 
 @router.post("/webscrape") # input: {"website": "https://www.google.com/"}
-def get_webscrape(website_dict: dict):
+async def get_webscrape(website_dict: dict):
     website = website_dict["website"]
     results = WebScrape.getWebScrape(website)
-    document = Document(id=website, text=results, department="test")
-    enroll(document)
-    return results
+    document = {"id":website, "text":results, "department":"test"}
+    # Invoke async AI enrollment function here and await response
+    webScrapeTask = await enroll(document)
+
+    # Check the AI enrollment response and return it
+    if webScrapeTask.status_code == 200:
+        return JSONResponse(content={"message": "Enrollment successfull"}, status_code=200)   
+    else:
+        return JSONResponse(content={"message": "Error in enrollment"}, status_code=500)

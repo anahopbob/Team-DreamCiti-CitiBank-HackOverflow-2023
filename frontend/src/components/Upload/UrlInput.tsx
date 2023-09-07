@@ -16,7 +16,7 @@ const UrlInput: FunctionComponent = () => {
 
   const scrapURL = (url: string) => {
     axios
-      .post("http://127.0.0.1:8000/webscrape", url)
+      .post("http://127.0.0.1:8000/webscrape", {"website":url})
       .then((response) => {
         console.log(response.data);
         setWebScrapeState((prev: webScrapes) => ({
