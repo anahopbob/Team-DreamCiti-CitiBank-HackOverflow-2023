@@ -60,9 +60,9 @@ const ItemCard = (props: Data) => {
   }
 
   const queryData = async () => {
-    
     const apiUrl =
-      "http://127.0.0.1:8000/objectInfo?object_id=" + props.contentId;
+      "http://127.0.0.1:8000/objectInfo?object_id=" + props.objectId;
+      console.log(apiUrl)
     fetch(apiUrl)
       .then((response) => {
         if (!response.ok) {
@@ -71,7 +71,7 @@ const ItemCard = (props: Data) => {
         return response.json();
       })
       .then((responseData: QueryData) => {
-        console.log(apiUrl);
+        console.log(responseData);
         setIsLink(responseData.isLink);
         setUrl(responseData.URL);
         setFilename(responseData.ObjectName);
@@ -150,7 +150,7 @@ const ItemCard = (props: Data) => {
   };
 
   const downloadFile = () => {
-    console.log(isLink)
+    
     if (isLink) {
       window.open(url, "_blank");
       return;
@@ -193,11 +193,11 @@ const ItemCard = (props: Data) => {
       ></div>
 
       <h2 className="card-title ml-4">
-        {props.objectId} {props.contentId}
+
         Department: {capitalizeFirstLetter(props.department)}
       </h2>
-      <div className="card-body">
-        <p>{props.text}</p>
+      <div className="card-body ">
+        <p className="whitespace-normal">{props.text}</p>
       </div>
       <div className="flex justify-end mx-20 my-10">
         <button className="btn btn-outline" onClick={downloadFile}>Go To</button>
