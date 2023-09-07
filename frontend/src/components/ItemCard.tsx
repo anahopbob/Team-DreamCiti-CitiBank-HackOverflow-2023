@@ -23,23 +23,35 @@ const ItemCard = (props: Data) => {
   const [hasUpvote, setHasUpvote] = useState(false);
   const [hasDownvote, setHasDownvote] = useState(false);
   const [count, setCount] = useState(0);
+  let currentToast: HTMLElement | null = null;
 
   function showToast(message: string, error: boolean) {
     const toastContainer = document.getElementById("toast-container");
+    
+    // Check if there's an existing toast, and remove it if it exists
+    if (currentToast) {
+      currentToast.remove();
+    }
+  
     const toast = document.createElement("div");
+  
     if (error) {
       toast.className = "bg-red-500 text-white px-4 py-2 rounded-md shadow-md";
     } else {
-      toast.className =
-        "bg-green-500 text-white px-4 py-2 rounded-md shadow-md";
+      toast.className = "bg-green-500 text-white px-4 py-2 rounded-md shadow-md";
     }
+  
     toast.textContent = message;
     if (toastContainer) {
       toastContainer.appendChild(toast);
     }
+  
+    currentToast = toast;
+  
     // Automatically remove the toast after a few seconds
     setTimeout(() => {
       toast.remove();
+      currentToast = null; // Reset the currentToast
     }, 3000); // 3000 milliseconds (3 seconds)
   }
 

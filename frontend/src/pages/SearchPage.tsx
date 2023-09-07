@@ -39,13 +39,37 @@ function Search() {
     const [searched, setSearched] = useState(false); // Track whether a search has been performed
     // const [data, setData] = useState<Data | null>(null);
     const [searchItem, setSearchItem] = useState("");
+    const [imgArray, setImgArray] = useState<string[]>(["/test1.png", "/test2.png", "/test3.png", "/test4.png", "/test5.png"]); // Array of image URLs
     const [empty, setEmpty] = useState(false);
+    let currentToast: HTMLElement | null = null;
+    function showToast(message: string) {
+        const toastContainer = document.getElementById("toast-container");
+        // Check if there's an existing toast, and remove it if it exists
+        if (currentToast) {
+            currentToast.remove();
+        }
+        const toast = document.createElement("div");
+        toast.className = "bg-red-500 text-white px-4 py-2 rounded-md shadow-md";
+        toast.textContent = message;
+        if (toastContainer) {
+            toastContainer.appendChild(toast);
+        }
+
+        currentToast = toast;
+
+        // Automatically remove the toast after a few seconds
+        setTimeout(() => {
+            toast.remove();
+            currentToast = null; // Reset the currentToast
+        }, 3000); // 3000 milliseconds (3 seconds)
+    }
     // Callback function to handle the search item
     const handleSearch = (item: string, department: string) => {
         if (item === "") {
             setTempArray([]);
             setEmpty(true);
             setSearched(false);
+            showToast("Search field cannot be empty!");
             return;
         }
         setSearched(true);
@@ -54,6 +78,13 @@ function Search() {
         // setDept(department);
 
         search(item, department);
+    };
+
+    const openLink = () => {
+        // Specify the URL you want to open in the new window/tab
+        const url = "";
+        // Open the new window/tab
+        window.open(url, '_blank');
     };
 
     const search = (query: string, department: string) => {
@@ -96,22 +127,39 @@ function Search() {
     };
     return (
         <div className="min-h-screen">
+            <div id="toast-container" className="fixed z-50 bottom-0 right-0 p-4 space-y-2"></div>
             <div className={`flex justify-center items-center flex-col h-screen ${searched ? "hidden" : ""}`}>
                 <img className="w-28 h-20" src="/citi2.svg" alt="CitiBank Logo" />
                 <Searchbar onSearch={handleSearch} departments={departments} />
-                {empty ? (
+                {/* {empty ? (
                         <div className="badge badge-error text-xl p-6">
                             Please enter text in the input field before searching
                         </div>
                     ) : (
                         <span></span>
-                    )}
+                    )} */}
             </div>
             <div className={`flex justify-center items-center flex-col my-4 ${searched ? "" : "hidden"}`}>
                 <Searchbar onSearch={handleSearch} departments={departments} />
             </div>
 
-            <div className="flex justify-center items-center flex-col my-4">
+            <div className="flex justify-center items-center flex-col my-4 w-screen">
+                {imgArray && (
+                    <div className="w-3/4 border rounded-xl p-6 shadow-xl">
+                        <span className="p-4 text-xl font-bold">Images for: {searchItem} </span>
+                        <div className="flex flex-wrap ">
+                            {imgArray.map((item, index) => (
+                                <img
+                                    onClick={openLink}
+                                    key={index}
+                                    className="w-1/2 md:w-1/3 lg:w-1/3 p-2 cursor-pointer"
+                                    src={item}
+                                    alt="Image"></img>
+                            ))}
+                        </div>
+                    </div>
+
+                )}
                 {tempArray && (
                     <div className="flex justify-center items-center flex-col">
                         {tempArray.map((item, index) => (
