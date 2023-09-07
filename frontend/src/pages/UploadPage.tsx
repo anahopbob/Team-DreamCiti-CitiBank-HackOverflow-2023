@@ -9,7 +9,7 @@ function Upload() {
   return (
     <div className="">
       <div className="flex items-center justify-center pt-10">
-        <div className="join ">
+        <div className="join">
           <input
             className={"join-item btn btn-pill px-8"}
             type="radio"
@@ -19,7 +19,7 @@ function Upload() {
             onChange={() => setSelectedOption("URL")}
           />
           <input
-            className="join-item bg-white btn px-8"
+            className="join-item btn px-8"
             type="radio"
             name="options"
             aria-label="PDF"
