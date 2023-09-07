@@ -29,7 +29,7 @@ const FileDownload: FunctionComponent = () => {
       });
   };
   return (
-    <div className="flex flex-col items-center border border-gray-900">
+    <div className="flex flex-col items-center border border-gray-900 mb-10">
       <input
         type="text"
         id="fileID"
