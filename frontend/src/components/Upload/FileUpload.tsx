@@ -83,8 +83,7 @@ const FileUpload: FunctionComponent = () => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("department", dept);
-    console.log(formData);
-    console.log(file);
+
     axios
       .post("http://localhost:8000/pdf-enroll", formData, {
         headers: {
@@ -93,7 +92,6 @@ const FileUpload: FunctionComponent = () => {
       })
       .then((response) => {
         showToast("Uploaded!", false);
-        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -161,9 +159,9 @@ const FileUpload: FunctionComponent = () => {
           name="file"
           types={fileTypes}
         />
-        <p>{file ? `File name: ${file.name}` : "no files uploaded yet"}</p>
+        {/* <p>{file ? `File name: ${file.name}` : "no files uploaded yet"}</p> */}
       </div>
-      <div className="border border-gray-900 my-10 flex flex-col items-center">
+      {/* <div className="border border-gray-900 my-10 flex flex-col items-center">
         <Button className="border border-gray-900" onClick={handleFiles}>
           Get files
         </Button>
@@ -175,7 +173,7 @@ const FileUpload: FunctionComponent = () => {
             </li>
           ))}
         </ol>
-      </div>
+      </div> */}
     </div>
   );
 };
