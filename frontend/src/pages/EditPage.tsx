@@ -35,9 +35,9 @@ const Edit = () => {
                 return response.json();
             })
             .then((responseData: Content[]) => {
-                var temp = []
+                let temp = []
                 for (let i = 0; i < responseData.length; i++) {
-                    var dict: Document = {
+                    let dict: Document = {
                         "department": responseData[i].Department,
                         "name": responseData[i].ObjectName,
                         "upvotes": responseData[i].Upvotes,
