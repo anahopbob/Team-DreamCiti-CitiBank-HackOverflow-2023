@@ -11,7 +11,7 @@ function Upload() {
       <div className="flex items-center justify-center pt-10">
         <div className="join">
           <input
-            className={"join-item btn px-8"}
+            className={"join-item btn btn-pill px-8"}
             type="radio"
             name="options"
             aria-label="URL"

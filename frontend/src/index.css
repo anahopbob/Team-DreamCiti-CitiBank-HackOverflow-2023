@@ -2,9 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'InterState';
+  src: local('InterState Regular'), url('../public/Interstate-Regular.ttf') format('truetype');
+  font-weight: normal; /* Specify the font weight as 'normal' for regular */
+}
+
+@font-face {
+  font-family: 'InterState Bold';
+  src: local('InterState Bold'), url('../public/Interstate-Bold.otf') format('opentype');
+  font-weight: bold; /* Specify the font weight as 'bold' for the bold variation */
+}
+
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: InterState, Helvetica, sans-serif;
+  line-height: 1;
   font-weight: 400;
 
   color: 111111;
@@ -16,6 +28,29 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+}
+
+html {
+  font-size: 16px;
+}
+
+.btn-primary{
+  background-color: #004685;
+  color: white
+}
+
+.btn-primary:hover{
+  background-color: #00325e;
+}
+
+.btn-pill{
+  background-color: white;
+  color:black;
+}
+
+.btn-pill:hover{
+  background-color: #004685;
+  color: white;
 }
 
 /* a {
