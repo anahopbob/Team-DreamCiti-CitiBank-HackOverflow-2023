@@ -37,6 +37,7 @@ function Search() {
   }, [setHeaderAtom]);
   const departments = ["any", "finance", "sales", "legal"];
   const [tempArray, setTempArray] = useState<MyObject[]>([]);
+  const [imageData, setImageData] = useState<string[][]>([]); // Array of image URLs
   const [searched, setSearched] = useState(false); // Track whether a search has been performed
   // const [data, setData] = useState<Data | null>(null);
   const [searchItem, setSearchItem] = useState("");
@@ -58,7 +59,7 @@ function Search() {
       currentToast.remove();
     }
     const toast = document.createElement("div");
-    toast.className = "bg-red-500 text-white px-4 py-2 rounded-md shadow-md";
+    toast.className = "px-4 py-2 text-white bg-red-500 rounded-md shadow-md";
     toast.textContent = message;
     if (toastContainer) {
       toastContainer.appendChild(toast);
@@ -91,9 +92,9 @@ function Search() {
     search(item, department);
   };
 
-  const openLink = () => {
+  const openLink = (url) => {
     // Specify the URL you want to open in the new window/tab
-    const url = "";
+    // url = "";
     // Open the new window/tab
     window.open(url, "_blank");
   };
@@ -134,6 +135,8 @@ function Search() {
       });
   };
 
+  
+
   const search = (query: string, department: string) => {
     let apiUrl = "";
     // Define the API endpoint URL
@@ -156,6 +159,7 @@ function Search() {
         return response.json();
       })
       .then((responseData: Data) => {
+        let imageData = [];
         let temp: MyObject[] = [];
         for (let i = 0; i < responseData.results.documents[0].length; i++) {
           if (responseData.results.documents[0][i] === "") {
@@ -167,9 +171,26 @@ function Search() {
             text: responseData.results.documents[0][i],
             contentId:  responseData.results.metadatas[0][i].content_id,
           };
+
+          // Xun Yi
+          let images = [];
+          if (dict.contentId !== "" && dict.contentId.includes(",")) {
+            let contentIdArray = dict.contentId.split(",");
+            contentIdArray.forEach((item) => {
+              images.push([dict.objectId, item]);
+            });
+          } else if (dict.contentId !== "") {
+            images.push([dict.objectId, dict.contentId]);
+          }
+          if (images.length !== 0) {
+            imageData.push(images);
+          }
+          // Xun Yi
+
           temp.push(dict);
         }
         setTempArray(temp);
+        setImageData(imageData);
         summarise(responseData);
       })
       .catch((err) => {
@@ -180,61 +201,97 @@ function Search() {
     <div className="min-h-screen">
       <div
         id="toast-container"
-        className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
+        className="fixed bottom-0 right-0 z-50 p-4 space-y-2"
       ></div>
       <div
-        className={`flex justify-center items-center flex-col h-full py-60 ${
-          searched ? "hidden" : ""
-        }`}
+        className={`flex justify-center items-center flex-col h-full py-60 ${searched ? "hidden" : ""
+          }`}
       >
         <img
-          className="w-72 h-auto"
+          className="h-auto w-72"
           src="/Citibank-Logo.svg"
           alt="CitiBank Logo"
         />
         <Searchbar onSearch={handleSearch} departments={departments} />
       </div>
       <div
-        className={`flex justify-center items-center flex-col my-4 ${
-          searched ? "" : "hidden"
-        }`}
+        className={`flex justify-center items-center flex-col my-4 ${searched ? "" : "hidden"
+          }`}
       >
         <Searchbar onSearch={handleSearch} departments={departments} />
       </div>
 
-      <div className="flex justify-center items-center flex-col my-4 w-screen">
+      <div className="flex flex-col items-center justify-center w-screen my-4">
         {loading && (
-          <span className="loading loading-spinner loading-lg w-15 py-8"></span>
+          <span className="py-8 loading loading-spinner loading-lg w-15"></span>
         )}
-        {(!loading && summary) && (
-          <div className="flex justify-center items-center flex-col">
-            <div className="card bg-base-100 shadow-xl w-3/4 py-4 my-2 border">
-              <h1 className="card-title ml-4">
+        {!loading && summary && (
+          <div className="flex flex-col items-center justify-center">
+            <div className="w-3/4 py-4 my-2 border shadow-xl card bg-base-100">
+              <h1 className="ml-4 card-title">
                 AI Search results for: {searchItem}
               </h1>
               <div className="card-body">
-                <p className=" text-ellipsis whitespace-normal overflow-hidden ">
+                <p className="overflow-hidden whitespace-normal text-ellipsis">
                   {summary}
                 </p>
                 </div>
             </div>
             <div>
-              <h1 className="card-title ml-4 py-10">
+              <h1 className="py-10 ml-4 card-title">
                 Compiled Search Results for : {searchItem}
               </h1>
             </div>
           </div>
         )}
+        {imageData.length !== 0 && (
+          <div className="w-3/4 py-4 my-2 border shadow-xl card bg-base-100">
+            <span className="ml-4 card-title">Images for: {searchItem}</span>
+            <div className="card-body">
+              <div className="flex flex-wrap ">
+                {imageData.map((item, index) => (
+                  <div key={index}>
+                    {item.map(([objectId, contentId], idx) => (
+                      <div key={idx}>
+                        <img
+                          onClick={() => openLink(objectId)}
+                          className="w-1/2 p-2 cursor-pointer md:w-1/3 lg:w-1/3"
+                          src={"src/images/" + contentId + ".jpeg"}
+                          alt="Image"
+                          style={{ width: '200px', height: '150px' }}
+                        />                      </div>
+                    ))}
+                  </div>
+                ))}
+                {/* {tempArray.map((item, index) => (
+                  (
+                  <p>
+                    {item.contentId}
+                  </p>
+
+                  )
+                  // <img
+                  //   onClick={openLink}
+                  //   key={index}
+                  //   className="w-1/2 p-2 cursor-pointer md:w-1/3 lg:w-1/3"
+                  //   src={"src/images/5cc9e0a6-e20c-42d8-ad4e-adf054a8faa1.jpeg"}
+                  //   alt="Image"
+                  // ></img>
+                ), )} */}
+              </div>
+            </div>
+          </div>
+        )}
         {/* {imgArray && (
-          <div className="card bg-base-100 shadow-xl w-3/4 py-4 my-2 border">
-            <span className="card-title ml-4">Images for: {searchItem}</span>
+          <div className="w-3/4 py-4 my-2 border shadow-xl card bg-base-100">
+            <span className="ml-4 card-title">Images for: {searchItem}</span>
             <div className="card-body">
               <div className="flex flex-wrap ">
                 {imgArray.map((item, index) => (
                   <img
                     onClick={openLink}
                     key={index}
-                    className="w-1/2 md:w-1/3 lg:w-1/3 p-2 cursor-pointer"
+                    className="w-1/2 p-2 cursor-pointer md:w-1/3 lg:w-1/3"
                     src={item}
                     alt="Image"
                   ></img>
@@ -245,9 +302,9 @@ function Search() {
         )} */}
 
         {tempArray.length !== 0 && (
-          <div className="flex justify-center items-center flex-col w-full">
+          <div className="flex flex-col items-center justify-center w-full">
             <div>
-              <h1 className="card-title ml-4 py-10">Documents</h1>
+              <h1 className="py-10 ml-4 card-title">Documents</h1>
             </div>
             {tempArray.map((item, index) => (
               // <div>
