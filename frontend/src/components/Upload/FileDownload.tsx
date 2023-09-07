@@ -12,7 +12,6 @@ const FileDownload: FunctionComponent = () => {
   const handleClick = () => {
     setUpdated(message);
     // Make a GET request to download the file
-    console.log("calling download");
     const apiUrl = `http://localhost:8000/download?file_name=${message}`;
 
     fetch(apiUrl)
