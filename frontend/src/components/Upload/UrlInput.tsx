@@ -5,13 +5,7 @@ import type { webScrapes } from "../../jotai/webScrapeAtoms";
 import axios from "axios";
 
 const UrlInput: FunctionComponent = () => {
-  // TYLER CODE
-  const departments = [
-    "Department",
-    "finance",
-    "sales",
-    "legal",
-  ];
+  const departments = ["Any", "finance", "sales", "legal"];
   const [dept, setDept] = useState(departments[0]);
   const changeDepartment = (e: any) => {
     setDept(e.target.value);
@@ -21,7 +15,6 @@ const UrlInput: FunctionComponent = () => {
   const capitalizeFirstLetter = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
-  // TYLER CODE
 
   const [url, setUrl] = useState<string>("");
   const [webScrapeState, setWebScrapeState] = useAtom(webScrapeAtom);
@@ -34,13 +27,15 @@ const UrlInput: FunctionComponent = () => {
 
   const scrapURL = (url: string) => {
     axios
-      .post("http://127.0.0.1:8000/webscrape", {"website":url, "department":dept})
+      .post("http://127.0.0.1:8000/webscrape", {
+        website: url,
+        department: dept,
+      })
       .then((response) => {
         console.log(response.data);
         setWebScrapeState((prev: webScrapes) => ({
           ...prev,
           [url]: { url },
-
         }));
       })
       .catch((error) => {
@@ -49,10 +44,10 @@ const UrlInput: FunctionComponent = () => {
   };
 
   return (
-    <div className="flex items-center justify-center flex-col pt-20 pb-60" >
+    <div className="flex items-center justify-center flex-col pt-18 pb-60">
       <form className="form-control" onSubmit={handleSubmit}>
         <div className="input-group lg:input-group-lg py-10 w-full">
-        <input
+          <input
             type="text"
             placeholder="https://..."
             className="input input-bordered w-[40vw]"

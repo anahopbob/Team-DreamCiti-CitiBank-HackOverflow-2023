@@ -172,7 +172,7 @@ function Search() {
         className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
       ></div>
       <div
-        className={`flex justify-center items-center flex-col h-screen ${
+        className={`flex justify-center items-center flex-col min-h-screen ${
           searched ? "hidden" : ""
         }`}
       >
