@@ -1,4 +1,5 @@
 import { atomWithStorage } from "jotai/utils";
+import { atom } from "jotai";
 
 // export const webScrapeAtom = atomWithStorage("webScrapeAtom", {
 
@@ -8,3 +9,5 @@ export type webScrapes = {
     url: string;
   };
 };
+
+export const headerAtom = atom(false);
