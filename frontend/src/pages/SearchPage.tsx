@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Searchbar from "../components/Searchbar";
 import ItemCard from "../components/ItemCard";
+import { useAtom } from "jotai";
+import { headerAtom } from "../jotai/webScrapeAtoms";
 
 interface Results {
   ids: string[][];
@@ -25,7 +27,12 @@ interface MyObject {
   text: string;
 }
 
-function Search({ updateSearchStatus }) {
+function Search() {
+  const [, setHeaderAtom] = useAtom(headerAtom);
+
+  useEffect(() => {
+    setHeaderAtom(false);
+  }, [setHeaderAtom]);
   const departments = ["any", "finance", "sales", "legal"];
   const [tempArray, setTempArray] = useState<MyObject[]>([]);
   const [searched, setSearched] = useState(false); // Track whether a search has been performed
@@ -69,11 +76,12 @@ function Search({ updateSearchStatus }) {
       setTempArray([]);
       setEmpty(true);
       setSearched(false);
+
       showToast("Search field cannot be empty!");
       return;
     }
+    setHeaderAtom(true);
     setSearched(true);
-    updateSearchStatus(true);
     setEmpty(false);
     setSearchItem(item);
     // setDept(department);
@@ -173,7 +181,7 @@ function Search({ updateSearchStatus }) {
         className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
       ></div>
       <div
-        className={`flex justify-center items-center flex-col h-full py-52 ${
+        className={`flex justify-center items-center flex-col h-full py-60 ${
           searched ? "hidden" : ""
         }`}
       >

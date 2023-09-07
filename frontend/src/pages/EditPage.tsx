@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import EditCard from "../components/EditCard";
 import { Routes } from "../routes/index";
 import { Link } from "react-router-dom";
+import { useAtom } from "jotai";
+import { headerAtom } from "../jotai/webScrapeAtoms";
 
 interface Document {
   department: string | null;
@@ -25,6 +27,11 @@ interface Content {
 
 const Edit = () => {
   const [Documents, setDocuments] = useState<Document[]>([]);
+  const [, setHeaderAtom] = useAtom(headerAtom);
+
+  useEffect(() => {
+    setHeaderAtom(true);
+  }, [setHeaderAtom]);
 
   const getFolders = async () => {
     const apiUrl = "http://127.0.0.1:8000/objectInfo/all";

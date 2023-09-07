@@ -1,12 +1,11 @@
 import React from "react";
 import { Routes } from "../routes/index";
 import { Link } from "react-router-dom";
+import { useAtom } from "jotai";
+import { headerAtom } from "../jotai/webScrapeAtoms";
 
-interface HeaderProps {
-  isSearched: boolean; // Receive the 'isSearched' prop
-}
-
-export const Header: React.FC<HeaderProps> = ({ isSearched }) => {
+export const Header: React.FC = () => {
+  const [isSearched] = useAtom(headerAtom);
   const navbarBgColor = isSearched ? "bg-citiblue" : "bg-white";
   const buttonClass = isSearched ? "text-neutral-50" : "text-black";
 
@@ -15,8 +14,10 @@ export const Header: React.FC<HeaderProps> = ({ isSearched }) => {
       <div className={`navbar ${navbarBgColor} py-4`}>
         <div className="flex-1">
           <Link to={Routes.Search}>
-            {isSearched && (
-              <img src="/citi.svg" className="pl-6 h-18 w-32 " alt="Your SVG" />
+            {isSearched ? (
+              <img src="/citi.svg" className="pl-6 h-18 w-32" alt="Your SVG" />
+            ) : (
+              <img src="/citi3.svg" className="pl-6 h-18 w-32" alt="Your SVG" />
             )}
           </Link>
         </div>

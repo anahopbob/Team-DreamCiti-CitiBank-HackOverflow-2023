@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FileUpload from "../components/Upload/FileUpload";
 import FileDownload from "../components/Upload/FileDownload";
 import UrlInput from "../components/Upload/UrlInput";
+import { useAtom } from "jotai";
+import { headerAtom } from "../jotai/webScrapeAtoms";
 
 function Upload() {
   const [selectedOption, setSelectedOption] = useState("URL");
+  const [, setHeaderAtom] = useAtom(headerAtom);
+
+  useEffect(() => {
+    setHeaderAtom(true);
+  }, [setHeaderAtom]);
 
   return (
     <div className="">
