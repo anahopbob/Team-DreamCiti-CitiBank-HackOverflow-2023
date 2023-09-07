@@ -262,9 +262,6 @@ async def enroll(document: Document)->None:
         return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
 
 
-
-
-
 @router.post("/enroll-image-caption")
 def enroll_image_caption(image: ImageDict):
     """
@@ -310,7 +307,6 @@ def enroll_image_caption(image: ImageDict):
     # ============Start AI Portion==============
 
     return None
-
 
 
 @router.post("/enroll-image-embedding")
@@ -377,6 +373,7 @@ def search_items(
         return JSONResponse(content={"message": "No results found"}, status_code=200)
     else:
         return JSONResponse(content={"results": results , "query": query}, status_code=200)
+
 
 @router.post("/summarise")
 def summarise_items(
