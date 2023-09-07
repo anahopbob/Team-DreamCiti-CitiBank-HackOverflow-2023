@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import axios from "axios";
 
 const FileDownload: FunctionComponent = () => {
@@ -29,7 +29,7 @@ const FileDownload: FunctionComponent = () => {
       });
   };
   return (
-    <div className="flex flex-col items-center border border-gray-900">
+    <div className="flex flex-col items-center border border-gray-900 mb-10">
       <input
         type="text"
         id="fileID"

@@ -8,6 +8,10 @@ function Upload() {
 
   return (
     <div className="">
+      <div className="mx-14 my-8">
+        <input type="checkbox" className="toggle" checked />
+      </div>
+
       <FileUpload />
       <FileDownload />
     </div>

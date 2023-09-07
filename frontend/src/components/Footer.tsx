@@ -1,23 +1,29 @@
 import React from "react";
-import citi from "/public/citi.png"
 
 export const Footer: React.FC = () => {
-  return <div>
-    <footer className="footer footer-center p-10 text-base-content rounded">
-      <nav className="grid grid-flow-col gap-4">
-        <a className="link link-hover">About us</a>
-        <a className="link link-hover">Contact</a>
-        <a className="link link-hover">Jobs</a>
-        <a className="link link-hover">Press kit</a>
+  return (
+    <footer className="footer p-10 bg-white border-t-2 border-gray-100 text-black">
+      <aside>
+        <p>
+          <img className="w-28 h-20" src="/citi2.svg" alt="CitiBank Logo" />
+          <br />
+          Copyright © 2023 Citigroup Inc.
+        </p>
+      </aside>
+      <nav>
+        <header className="footer-title">Services</header>
+        <a className="link link-hover">Banking</a>
+        <a className="link link-hover">Credit Cards</a>
+        <a className="link link-hover">Mortagages</a>
+        <a className="link link-hover">Loans</a>
       </nav>
       <nav>
-        <div className="grid grid-flow-col gap-4">
-          <img src={citi} className="inline-block stroke-current w-20" alt="Your SVG" />
-        </div>
+        <header className="footer-title">Company</header>
+        <a className="link link-hover">About us</a>
+        <a className="link link-hover">Contact</a>
+        <a className="link link-hover">Notices</a>
+        <a className="link link-hover">Site Map</a>
       </nav>
-      <aside>
-        <p>Copyright © 2023 - All right reserved</p>
-      </aside>
     </footer>
-  </div>;
+  );
 };
