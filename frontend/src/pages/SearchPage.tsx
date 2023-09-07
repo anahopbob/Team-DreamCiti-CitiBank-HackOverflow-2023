@@ -172,9 +172,8 @@ function Search() {
         className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
       ></div>
       <div
-        className={`flex justify-center items-center flex-col h-screen ${
-          searched ? "hidden" : ""
-        }`}
+        className={`flex justify-center items-center flex-col h-screen ${searched ? "hidden" : ""
+          }`}
       >
         <img
           className="w-72 h-auto"
@@ -184,27 +183,26 @@ function Search() {
         <Searchbar onSearch={handleSearch} departments={departments} />
       </div>
       <div
-        className={`flex justify-center items-center flex-col my-4 ${
-          searched ? "" : "hidden"
-        }`}
+        className={`flex justify-center items-center flex-col my-4 ${searched ? "" : "hidden"
+          }`}
       >
         <Searchbar onSearch={handleSearch} departments={departments} />
       </div>
 
       <div className="flex justify-center items-center flex-col my-4 w-screen">
         {loading && (
-          <span className="loading loading-spinner loading-lg w-28"></span>
+          <span className="loading loading-spinner loading-lg w-15 py-8"></span>
         )}
         {!loading && summary && (
           <div className="flex justify-center items-center flex-col">
             <div className="card bg-base-100 shadow-xl w-3/4 py-4 my-2 border">
               <h1 className="card-title ml-4">
-                Summary of results for query: {searchItem}
+                AI Search results for: {searchItem}
               </h1>
               <div className="card-body">{summary}</div>
             </div>
             <div>
-              <h1 className="card-title ml-4 py-10">Compiled Search Results</h1>
+              <h1 className="card-title ml-4 py-10">Compiled Search Results for :{searchItem}</h1>
             </div>
           </div>
         )}
@@ -226,8 +224,12 @@ function Search() {
             </div>
           </div>
         )}
+
         {tempArray && (
           <div className="flex justify-center items-center flex-col">
+            <div>
+              <h1 className="card-title ml-4 py-10">Documents</h1>
+            </div>
             {tempArray.map((item, index) => (
               <ItemCard
                 key={index}
