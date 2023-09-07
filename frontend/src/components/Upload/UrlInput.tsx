@@ -5,13 +5,7 @@ import type { webScrapes } from "../../jotai/webScrapeAtoms";
 import axios from "axios";
 
 const UrlInput: FunctionComponent = () => {
-  // TYLER CODE
-  const departments = [
-    "Department",
-    "finance",
-    "sales",
-    "legal",
-  ];
+  const departments = ["Any", "finance", "sales", "legal"];
   const [dept, setDept] = useState(departments[0]);
   const changeDepartment = (e: any) => {
     setDept(e.target.value);
@@ -36,7 +30,8 @@ const UrlInput: FunctionComponent = () => {
     if (error) {
       toast.className = "bg-red-500 text-white px-4 py-2 rounded-md shadow-md";
     } else {
-      toast.className = "bg-green-500 text-white px-4 py-2 rounded-md shadow-md";
+      toast.className =
+        "bg-green-500 text-white px-4 py-2 rounded-md shadow-md";
     }
 
     toast.textContent = message;
@@ -66,13 +61,15 @@ const UrlInput: FunctionComponent = () => {
 
   const scrapURL = (url: string) => {
     axios
-      .post("http://127.0.0.1:8000/webscrape", {"website":url, "department":dept})
+      .post("http://127.0.0.1:8000/webscrape", {
+        website: url,
+        department: dept,
+      })
       .then((response) => {
         console.log(response.data);
         setWebScrapeState((prev: webScrapes) => ({
           ...prev,
           [url]: { url },
-
         }));
       })
       .catch((error) => {
@@ -81,14 +78,14 @@ const UrlInput: FunctionComponent = () => {
   };
 
   return (
-    <div className="flex items-center justify-center flex-col pt-20 pb-60" >
-              <div
+    <div className="flex items-center justify-center flex-col pt-20 pb-60">
+      <div
         id="toast-container"
         className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
       ></div>
       <form className="form-control" onSubmit={handleSubmit}>
         <div className="input-group lg:input-group-lg py-10 w-full">
-        <input
+          <input
             type="text"
             placeholder="https://..."
             className="input input-bordered w-[40vw]"

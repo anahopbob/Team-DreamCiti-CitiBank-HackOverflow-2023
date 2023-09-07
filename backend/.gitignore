@@ -5,3 +5,4 @@ __pycache__/
 chroma.db/
 .env
 images
+sample_images/
