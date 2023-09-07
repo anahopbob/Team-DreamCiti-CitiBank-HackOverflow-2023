@@ -44,6 +44,7 @@ const FileUpload: FunctionComponent = () => {
         console.log(response.data);
       })
       .catch((error) => {
+        console.error("ERRRORRRR");
         console.log(error);
       });
   };

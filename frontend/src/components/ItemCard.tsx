@@ -23,31 +23,33 @@ const ItemCard = (props: Data) => {
   const [hasUpvote, setHasUpvote] = useState(false);
   const [hasDownvote, setHasDownvote] = useState(false);
   const [count, setCount] = useState(0);
+  const [url, setUrl] = useState("");
+  const [filename, setFilename] = useState(""); // Name of the file to download
   let currentToast: HTMLElement | null = null;
 
   function showToast(message: string, error: boolean) {
     const toastContainer = document.getElementById("toast-container");
-    
+
     // Check if there's an existing toast, and remove it if it exists
     if (currentToast) {
       currentToast.remove();
     }
-  
+
     const toast = document.createElement("div");
-  
+
     if (error) {
       toast.className = "bg-red-500 text-white px-4 py-2 rounded-md shadow-md";
     } else {
       toast.className = "bg-green-500 text-white px-4 py-2 rounded-md shadow-md";
     }
-  
+
     toast.textContent = message;
     if (toastContainer) {
       toastContainer.appendChild(toast);
     }
-  
+
     currentToast = toast;
-  
+
     // Automatically remove the toast after a few seconds
     setTimeout(() => {
       toast.remove();
@@ -66,6 +68,8 @@ const ItemCard = (props: Data) => {
         return response.json();
       })
       .then((responseData: QueryData) => {
+        setUrl(responseData.URL);
+        setFilename(responseData.ObjectName);
         setCount(responseData.Upvotes - responseData.Downvotes);
       })
       .catch((err) => {
@@ -139,6 +143,40 @@ const ItemCard = (props: Data) => {
         console.log(err.message);
       });
   };
+
+  const downloadFile = () => {
+    const apiUrl = "http://127.0.0.1:8000/download?file_name=" + url;
+
+    fetch(apiUrl)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.blob(); // Get the response body as a Blob
+      })
+      .then((blobData) => {
+        // Create a URL for the Blob object
+        const blobUrl = window.URL.createObjectURL(blobData);
+
+        // Create a temporary link element to trigger the download
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = filename; // Set the filename
+        document.body.appendChild(link);
+
+        // Trigger the click event to initiate the download
+        link.click();
+
+        // Clean up the temporary link and URL object
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+      })
+      .catch((err) => {
+        console.error(err.message);
+        // Handle the error
+      });
+  }
+
   useEffect(() => {
     queryData();
   }, []);
@@ -157,7 +195,7 @@ const ItemCard = (props: Data) => {
         <p>{props.text}</p>
       </div>
       <div className="flex justify-end mx-20 my-10">
-        <button className="btn btn-outline">Go To</button>
+        <button className="btn btn-outline" onClick={downloadFile}>Go To</button>
         <div className="join ml-6">
           <button className="join-item btn" onClick={subtractCount}>
             <FontAwesomeIcon icon={faMinus} bounce />
