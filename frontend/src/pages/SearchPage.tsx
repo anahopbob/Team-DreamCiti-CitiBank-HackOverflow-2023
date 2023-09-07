@@ -30,10 +30,7 @@ function Search() {
         "any",
         "finance",
         "sales",
-        "marketing",
-        "hr",
-        "it",
-        "operations",
+        "legal",
     ];
     const [tempArray, setTempArray] = useState<MyObject[]>([]);
     const [searched, setSearched] = useState(false); // Track whether a search has been performed
@@ -148,9 +145,12 @@ function Search() {
                 return response.json();
             })
             .then((responseData: Data) => {
-                console.log(responseData.results.documents);
+                console.log(responseData);
                 let temp: MyObject[] = [];
                 for (let i = 0; i < responseData.results.documents[0].length; i++) {
+                    if (responseData.results.documents[0][i] === ""){
+                        continue;
+                    }
                     let dict: MyObject = {
                         objectId: responseData.results.metadatas[0][i].object_id,
                         department: responseData.results.metadatas[0][i].department,
