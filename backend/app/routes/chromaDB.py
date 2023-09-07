@@ -436,6 +436,7 @@ async def get_webscrape(
 ):
     department = website_dict["department"]
     website = website_dict["website"]
+    department = website_dict["department"]
     results = WebScrape.getWebScrape(website)
     document = {"id": website,
                  "text": results, 
