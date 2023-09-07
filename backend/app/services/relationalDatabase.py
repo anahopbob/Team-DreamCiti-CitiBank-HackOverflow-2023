@@ -11,23 +11,28 @@ from sqlalchemy.orm import sessionmaker, relationship
 Base = declarative_base()
 
 def initialize_rdbs():
-    # Create the SQLAlchemy engine and session
-   # Create a connection to the MySQL server without specifying a database
-    DATABASE_URL = "mysql+pymysql://root@localhost/citidream"
-    engine = create_engine(DATABASE_URL, echo=True)
-
+    print("Initializing rdbs")
+    try:
+        # Create the SQLAlchemy engine and session
     # Create a connection to the MySQL server without specifying a database
-    connection = engine.connect()
+        DATABASE_URL = "mysql+pymysql://root@localhost/citidream"
+        engine = create_engine(DATABASE_URL, echo=True)
 
-    # Close the connection to the MySQL server
+        # Create a connection to the MySQL server without specifying a database
+        # connection = engine.connect()
 
-    Base.metadata.create_all(bind=engine)
+        # Close the connection to the MySQL server
 
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-    session = SessionLocal()
+        Base.metadata.create_all(bind=engine)
 
-    connection.close()
-    return session
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        session = SessionLocal()
+        
+        # connection.close()
+        return session
+    except Exception as e:
+        print("Error in initializing RDBS")
+        print(e)
 
 initialize_rdbs()
 

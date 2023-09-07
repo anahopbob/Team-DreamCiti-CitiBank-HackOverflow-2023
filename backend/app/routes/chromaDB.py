@@ -8,6 +8,7 @@ from app.services.summary import SummariseContext
 from app.embeddings.imageToText import ImageToText
 from app.embeddings.imageEmbedding import ImageEmbedding
 from app.services.webscrape import WebScrape
+from app.routes.mysqlDB import insert_object_excerpt_pairs, insert_object_info
 
 import chromadb
 import uuid
@@ -196,6 +197,20 @@ async def pdf_enroll(
     fileName = file.filename
     fileExtension = file.filename.split(".")[-1].lower()
 
+    # Insert into mysqlDB
+    object_info = {
+        "ObjectID": fileName,
+        "ObjectName": fileName,
+        "Department": department,
+        "Classification": "Restricited",
+        "Upvotes": 0,
+        "Downvotes": 0,
+        "isLink": False,
+        "URL": ""
+    }
+    print(object_info)
+    _ = insert_object_info(object_info)
+
     # Determining file type
     if fileExtension == "pdf":
         try:
@@ -263,9 +278,12 @@ async def enroll(document: Document)->None:
 
         # Associating the object_id with the excerpt_id (using a NoSQL way)
         id_pairing = {
-            id : excerpt_ids 
+            "ObjectID" : id,
+            "ExcerptIDs" : excerpt_ids
         }
-        print(f"This is the pairing that should be saved: {id_pairing}, pass ID and list")
+        # Inserting into MySQL
+  
+        _ = insert_object_excerpt_pairs(id,excerpt_ids)
 
         collection.add(
             embeddings=embeddings,
@@ -403,29 +421,29 @@ def summarise_items(
         return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
     
 # @router.post("/delete")
-def delete_object_from_chromadb(
-        object_excerpt_list: List[dict]
-    ):
-    """
-    THIS ROUTE HAS BEEN REFACTORED TO BE USED IN mysqlDB.py.
-    IT WILL NOT BE CALLED FROM THE ROUTER ABOVE.
-    Given an object_id that corrosponds to the one inside S3,
-    delete all related embeddings inside ChromaDB.
-    Currently, association is hard coded.
-    """
-    # Connect to  bucket to get association list 
-    if len(object_excerpt_list) == 0:
-        return []
-    try:
-        association = []
-        for pair in object_excerpt_list:
-            association.append(pair["excerpt_id"])
-        collection.delete(
-            ids=association
-        )
-        return len(association)
-    except Exception as e:
-        return None
+# def delete_object_from_chromadb(
+#         object_excerpt_list: List[dict]
+#     ):
+#     """
+#     THIS ROUTE HAS BEEN REFACTORED TO BE USED IN mysqlDB.py.
+#     IT WILL NOT BE CALLED FROM THE ROUTER ABOVE.
+#     Given an object_id that corrosponds to the one inside S3,
+#     delete all related embeddings inside ChromaDB.
+#     Currently, association is hard coded.
+#     """
+#     # Connect to  bucket to get association list 
+#     if len(object_excerpt_list) == 0:
+#         return []
+#     try:
+#         association = []
+#         for pair in object_excerpt_list:
+#             association.append(pair["excerpt_id"])
+#         collection.delete(
+#             ids=association
+#         )
+#         return len(association)
+#     except Exception as e:
+#         return None
 
 # =============== Image Related Endpoints =================
 
@@ -442,6 +460,21 @@ async def get_webscrape(
                  "text": results, 
                  "department": department
     }
+
+    # Insert into mysqldb
+    object_info = {
+        "ObjectID": str(uuid.uuid4()),
+        "ObjectName": website,
+        "Department": department,
+        "Classification": "Restricted",
+        "Upvotes": 0,
+        "Downvotes": 0,
+        "isLink": True,
+        "URL": website
+    }
+
+    insert_object_info(object_info)
+
     # Invoke async AI enrollment function here and await response
     webScrapeTask = await enroll(document)
 
