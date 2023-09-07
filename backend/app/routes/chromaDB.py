@@ -83,8 +83,21 @@ s3Resource = boto3.resource('s3',
 # async function for PDF file upload to s3 bucket
 async def save_upload_file(file: UploadFile, fileName: str):
     try:
-        s3Client.upload_file(file.file, BUCKET_NAME, fileName)
-        return JSONResponse(content={"message": "File uploaded successfully"}, status_code=200)   
+        # Save a local copy of the uploaded file
+        with open(fileName, "wb") as local_file:
+            while True:
+                content = await file.read(1024)
+                if not content:
+                    break
+                local_file.write(content)
+
+        # Upload the local file to S3
+        s3Client.upload_file(fileName, BUCKET_NAME, fileName)
+
+        # Remove the local file after uploading to S3
+        os.remove(fileName)
+
+        return JSONResponse(content={"message": "Upload successfull"}, status_code=200) 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
@@ -92,6 +105,8 @@ async def save_upload_file(file: UploadFile, fileName: str):
 # async function for PDF text and image parse for AI VectorDB enrollment
 async def process_pdf_and_enroll(file: UploadFile, fileName: str) -> dict:
     try:
+        file.file.seek(0)
+
         # Read the PDF file
         pdfContent = await file.read()
 
