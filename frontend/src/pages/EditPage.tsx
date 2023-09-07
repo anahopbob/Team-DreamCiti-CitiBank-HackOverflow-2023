@@ -35,7 +35,7 @@ const Edit = () => {
                 return response.json();
             })
             .then((responseData: Content[]) => {
-                let temp = []
+                let temp: Document[] = []
                 for (let i = 0; i < responseData.length; i++) {
                     let dict: Document = {
                         "department": responseData[i].Department,
