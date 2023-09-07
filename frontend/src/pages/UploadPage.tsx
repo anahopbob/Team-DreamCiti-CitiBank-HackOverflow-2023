@@ -1,30 +1,39 @@
-import React from 'react'
-
+import { useState } from "react";
 import FileUpload from "../components/Upload/FileUpload";
 import FileDownload from "../components/Upload/FileDownload";
-// import { useLocation, Link } from "react-router-dom";
+import UrlInput from "../components/Upload/UrlInput";
 
 function Upload() {
-  // const [data, setData] = useState(null);
-  return (
-    <div className="flex flex-row">
-      <div className="join ">
-        <input
-          className="join-item bg-white btn"
-          type="radio"
-          name="options"
-          aria-label="URL"
-        />
-        <input
-          className="join-item bg-white btn"
-          type="radio"
-          name="options"
-          aria-label="PDF"
-        />
-      </div>
+  const [selectedOption, setSelectedOption] = useState("URL");
 
-      <FileUpload />
-      <FileDownload />
+  return (
+    <div className="">
+      <div className="flex items-center justify-center pt-10">
+        <div className="join ">
+          <input
+            className={"join-item bg-white btn px-8"}
+            type="radio"
+            name="options"
+            aria-label="URL"
+            defaultChecked={true}
+            onChange={() => setSelectedOption("URL")}
+          />
+          <input
+            className="join-item bg-white btn px-8"
+            type="radio"
+            name="options"
+            aria-label="PDF"
+            onChange={() => setSelectedOption("PDF")}
+          />
+        </div>
+      </div>
+      {selectedOption === "URL" && <UrlInput />}
+      {selectedOption === "PDF" && (
+        <>
+          <FileUpload />
+          <FileDownload />
+        </>
+      )}
     </div>
   );
 }

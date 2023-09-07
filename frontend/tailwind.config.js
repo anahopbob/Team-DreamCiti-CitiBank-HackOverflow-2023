@@ -8,6 +8,9 @@ export default {
         citiblue: "#004685",
       },
     },
+    daisyui: {
+      themes: ["coporate", "light"],
+    },
   },
   plugins: [require("daisyui")],
 };
