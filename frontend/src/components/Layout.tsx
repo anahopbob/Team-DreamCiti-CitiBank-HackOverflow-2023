@@ -5,9 +5,7 @@ import { Header } from "./Header";
 const Layout = () => {
   return (
     <div className="">
-      <div>
-        <Header />
-      </div>
+      <Header />
       <Outlet />
       <Footer />
     </div>

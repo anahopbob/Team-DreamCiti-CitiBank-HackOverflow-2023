@@ -5,7 +5,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        citiblue: "#003B70",
+        citiblue: "#004685",
       },
     },
   },

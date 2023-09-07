@@ -2,14 +2,25 @@
 
 import FileUpload from "../components/Upload/FileUpload";
 import FileDownload from "../components/Upload/FileDownload";
+// import { useLocation, Link } from "react-router-dom";
 
 function Upload() {
   // const [data, setData] = useState(null);
-
   return (
-    <div className="">
-      <div className="mx-14 my-8">
-        <input type="checkbox" className="toggle" checked />
+    <div className="flex flex-row">
+      <div className="join ">
+        <input
+          className="join-item bg-white btn"
+          type="radio"
+          name="options"
+          aria-label="URL"
+        />
+        <input
+          className="join-item bg-white btn"
+          type="radio"
+          name="options"
+          aria-label="PDF"
+        />
       </div>
 
       <FileUpload />
