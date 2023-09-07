@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons"; // Import the specific icon you want to use
 
@@ -132,13 +132,13 @@ const ItemCard = (props: Data) => {
   }, []);
 
   return (
-    <div className="card bg-base-100 shadow-xl w-3/4 my-4">
+    <div className="card bg-base-100 shadow-xl w-3/4 py-4 my-2 border">
       <div
         id="toast-container"
         className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
       ></div>
 
-      <h2 className="card-title">
+      <h2 className="card-title ml-4">
         Department: {capitalizeFirstLetter(props.department)}
       </h2>
       <div className="card-body">
