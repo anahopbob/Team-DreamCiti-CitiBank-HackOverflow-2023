@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Searchbar from "../components/Searchbar";
 import ItemCard from "../components/ItemCard";
 

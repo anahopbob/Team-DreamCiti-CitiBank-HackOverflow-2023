@@ -24,8 +24,8 @@ const EditCard = (props: Data) => {
     
 
     return (
-        <div className="card bg-base-100 shadow-xl my-4">
-            <h2 className="card-title">Department: { props.department }</h2>
+        <div className="card bg-base-100 shadow-xl my-4 border">
+            <h2 className="card-title ml-4 mt-4">Department: { props.department }</h2>
             <div className="card-body">
                 <p>
                     <span className=' font-bold'>
@@ -37,7 +37,7 @@ const EditCard = (props: Data) => {
                 </p>
                 <p className="">
                     <span className=' font-bold'>
-                        Score: 
+                        Votes: 
                     </span> 
                     <span className='px-4'>
                         {props.upvotes - props.downvotes}
