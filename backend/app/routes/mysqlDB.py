@@ -19,7 +19,6 @@ collection = client.get_or_create_collection(
 )
 
 def get_db_session():
-    print("Getting db session")
     session = initialize_rdbs()
     # insert_dummy_data(session)  # You may want to call this only once when initializing the app
     try:
@@ -129,7 +128,6 @@ def insert_object_info(
     """
     Insert a single object info into the database.
     """
-    print("Triggered")
     try:
         object_info_entry = ObjectInfo(
             ObjectID=object_info["ObjectID"],
@@ -178,7 +176,6 @@ def insert_object_excerpt_pairs(
 
         session.add_all(pairs)
         session.commit()
-        print("HERE")
         session.close()
         return True
     except Exception as e:
@@ -274,12 +271,14 @@ def delete_object_from_chromadb(
     try:
         association = []
         for pair in object_excerpt_list:
-            association.append(pair["excerpt_id"])
+            association.append(pair.ExcerptID)
         collection.delete(
             ids=association
         )
         return len(association)
     except Exception as e:
+        print("Error in deleting from ChromaDB")
+        print(e)
         return None
     
 # === End of Helper for Delete Function ===

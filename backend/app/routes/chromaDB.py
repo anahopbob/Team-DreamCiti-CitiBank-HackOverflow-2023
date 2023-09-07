@@ -208,7 +208,6 @@ async def pdf_enroll(
         "isLink": False,
         "URL": ""
     }
-    print(object_info)
     _ = insert_object_info(object_info)
 
     # Determining file type
