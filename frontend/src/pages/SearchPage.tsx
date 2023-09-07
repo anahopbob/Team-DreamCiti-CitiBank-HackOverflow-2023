@@ -172,8 +172,9 @@ function Search() {
         className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
       ></div>
       <div
-        className={`flex justify-center items-center flex-col h-screen ${searched ? "hidden" : ""
-          }`}
+        className={`flex justify-center items-center flex-col h-screen ${
+          searched ? "hidden" : ""
+        }`}
       >
         <img
           className="w-72 h-auto"
@@ -183,8 +184,9 @@ function Search() {
         <Searchbar onSearch={handleSearch} departments={departments} />
       </div>
       <div
-        className={`flex justify-center items-center flex-col my-4 ${searched ? "" : "hidden"
-          }`}
+        className={`flex justify-center items-center flex-col my-4 ${
+          searched ? "" : "hidden"
+        }`}
       >
         <Searchbar onSearch={handleSearch} departments={departments} />
       </div>
@@ -202,7 +204,9 @@ function Search() {
               <div className="card-body">{summary}</div>
             </div>
             <div>
-              <h1 className="card-title ml-4 py-10">Compiled Search Results for :{searchItem}</h1>
+              <h1 className="card-title ml-4 py-10">
+                Compiled Search Results for :{searchItem}
+              </h1>
             </div>
           </div>
         )}

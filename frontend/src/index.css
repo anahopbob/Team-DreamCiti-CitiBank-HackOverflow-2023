@@ -43,16 +43,6 @@ html {
   background-color: #00325e;
 }
 
-.btn-pill{
-  background-color: white;
-  color:black;
-}
-
-.btn-pill:hover{
-  background-color: #004685;
-  color: white;
-}
-
 /* a {
   font-weight: 500;
   color: #646cff;

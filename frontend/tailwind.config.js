@@ -6,11 +6,7 @@ export default {
     extend: {
       colors: {
         citiblue: "#004685",
-        citidark: "#00325e",
       },
-    },
-    daisyui: {
-      themes: ["coporate", "light"],
     },
   },
   plugins: [require("daisyui")],
