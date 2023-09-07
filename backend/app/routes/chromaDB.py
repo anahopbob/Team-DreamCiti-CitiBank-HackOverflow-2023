@@ -208,7 +208,6 @@ async def pdf_enroll(
         "isLink": False,
         "URL": ""
     }
-    print(object_info)
     _ = insert_object_info(object_info)
 
     # Determining file type
@@ -452,18 +451,21 @@ def summarise_items(
 async def get_webscrape(
     website_dict: dict,  
 ):
+    
+    website_id = str(uuid.uuid4())
+
     department = website_dict["department"]
     website = website_dict["website"]
     department = website_dict["department"]
     results = WebScrape.getWebScrape(website)
-    document = {"id": website,
+    document = {"id": website_id,
                  "text": results, 
                  "department": department
     }
 
     # Insert into mysqldb
     object_info = {
-        "ObjectID": str(uuid.uuid4()),
+        "ObjectID": website_id,
         "ObjectName": website,
         "Department": department,
         "Classification": "Restricted",
