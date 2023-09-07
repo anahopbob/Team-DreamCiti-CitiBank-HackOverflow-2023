@@ -65,7 +65,7 @@ const UrlInput: FunctionComponent = () => {
             value={dept}
           >
             {departments.map((option, index) => (
-              <option key={index} value={option}>
+              <option key={index} value={option} className="">
                 {capitalizeFirstLetter(option)}
               </option>
             ))}
