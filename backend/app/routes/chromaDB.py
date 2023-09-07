@@ -431,10 +431,16 @@ def delete_object_from_chromadb(
 
 
 @router.post("/webscrape") # input: {"website": "https://www.google.com/"}
-async def get_webscrape(website_dict: dict):
+async def get_webscrape(
+    website_dict: dict,  
+):
+    department = website_dict["department"]
     website = website_dict["website"]
     results = WebScrape.getWebScrape(website)
-    document = {"id":website, "text":results, "department":"test"}
+    document = {"id": website,
+                 "text": results, 
+                 "department": department
+    }
     # Invoke async AI enrollment function here and await response
     webScrapeTask = await enroll(document)
 
