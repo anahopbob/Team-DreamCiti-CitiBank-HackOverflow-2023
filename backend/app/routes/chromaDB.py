@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, File, UploadFile, HTTPException, Response, status
+from fastapi import APIRouter, Query, File, UploadFile, HTTPException, Response, status, Form
 from fastapi.responses import JSONResponse
 
 from app.embeddings.MiniLM_embedder import MiniLM_embedder
@@ -103,7 +103,7 @@ async def save_upload_file(file: UploadFile, fileName: str):
     
     
 # async function for PDF text and image parse for AI VectorDB enrollment
-async def process_pdf_and_enroll(file: UploadFile, fileName: str) -> dict:
+async def process_pdf_and_enroll(file: UploadFile, fileName: str, department: str) -> dict:
     try:
         file.file.seek(0)
 
@@ -159,13 +159,12 @@ async def process_pdf_and_enroll(file: UploadFile, fileName: str) -> dict:
         pdf_document.close()
 
         # Invoke AI PDF Enrollment function here (ID to be retrieved from S3, department to be retrieved from frontend)
-        sampleDepartment = "HumanResources"
         finalText = ''.join(extractedText)
 
         finalDocument = {
             "id": fileName,
             "text": finalText,
-            "department": sampleDepartment
+            "department": department
         }
 
         # Invoke async AI enrollment function here and await response
@@ -183,7 +182,10 @@ async def process_pdf_and_enroll(file: UploadFile, fileName: str) -> dict:
     
 
 @router.post("/pdf-enroll")
-async def pdf_enroll(file: UploadFile):
+async def pdf_enroll(
+    file: UploadFile, 
+    department: str = Form(...)
+):
     """
     Given a file (PDF/Word) upload, extract its text and images. 
     The file and its images will be stored in the AWS S3 bucket and 
@@ -204,7 +206,7 @@ async def pdf_enroll(file: UploadFile):
             file.file.seek(0)
 
             # Creating an asyncio task for AI enrollment
-            AiTask = asyncio.create_task(process_pdf_and_enroll(file, fileName))
+            AiTask = asyncio.create_task(process_pdf_and_enroll(file, fileName, department))
 
             # Await both responses
             s3Response = await s3_upload_task
