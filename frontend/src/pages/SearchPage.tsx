@@ -20,6 +20,7 @@ interface Data {
 }
 
 interface MyObject {
+  objectId: string;
   department: string;
   text: string;
 }
@@ -54,7 +55,7 @@ function Search() {
   };
 
   const search = (query: string, department: string) => {
-    var apiUrl = "";
+    let apiUrl = "";
     // Define the API endpoint URL
     if (department === "any") {
       apiUrl = "http://127.0.0.1:8000/search/?query=" + query;
@@ -76,9 +77,10 @@ function Search() {
       })
       .then((responseData: Data) => {
         console.log(responseData.results.documents);
-        var temp = [];
+        let temp = [];
         for (let i = 0; i < responseData.results.documents[0].length; i++) {
-          var dict: MyObject = {
+          let dict: MyObject = {
+            objectId: responseData.results.metadatas[0][i].object_id,
             department: responseData.results.metadatas[0][i].department,
             text: responseData.results.documents[0][i],
           };
@@ -104,6 +106,7 @@ function Search() {
                 key={index}
                 department={item.department}
                 text={item.text}
+                objectId={item.objectId}
               />
             ))}
           </div>
