@@ -97,8 +97,7 @@ async def save_upload_file(file: UploadFile, fileName: str):
         # Remove the local file after uploading to S3
         os.remove(fileName)
 
-        return JSONResponse(content={"message": "Upload successfull"}, status_code=200)   
-    
+        return JSONResponse(content={"message": "Upload successfull"}, status_code=200) 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
@@ -278,9 +277,6 @@ async def enroll(document: Document)->None:
         return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
 
 
-
-
-
 @router.post("/enroll-image-caption")
 def enroll_image_caption(image: ImageDict):
     """
@@ -326,7 +322,6 @@ def enroll_image_caption(image: ImageDict):
     # ============Start AI Portion==============
 
     return None
-
 
 
 @router.post("/enroll-image-embedding")
@@ -394,6 +389,7 @@ def search_items(
     else:
         return JSONResponse(content={"results": results , "query": query}, status_code=200)
 
+
 @router.post("/summarise")
 def summarise_items(
     results_dict: dict
@@ -433,8 +429,15 @@ def delete_object_from_chromadb(
 
 
 @router.post("/webscrape") # input: {"website": "https://www.google.com/"}
-def get_webscrape(website_dict: dict):
-    results = WebScrape.getWebScrape(website_dict["website"])
-    # document = Document(id=website, text=results, department="test")
-    # enroll(document)
-    return results
+async def get_webscrape(website_dict: dict):
+    website = website_dict["website"]
+    results = WebScrape.getWebScrape(website)
+    document = {"id":website, "text":results, "department":"test"}
+    # Invoke async AI enrollment function here and await response
+    webScrapeTask = await enroll(document)
+
+    # Check the AI enrollment response and return it
+    if webScrapeTask.status_code == 200:
+        return JSONResponse(content={"message": "Enrollment successfull"}, status_code=200)   
+    else:
+        return JSONResponse(content={"message": "Error in enrollment"}, status_code=500)
