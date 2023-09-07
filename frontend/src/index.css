@@ -71,3 +71,8 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 } */
+
+.bth::after {
+  background-color: black; /* Change background color */
+  color: white; /* Change text color */
+}

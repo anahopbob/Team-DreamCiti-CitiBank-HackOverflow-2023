@@ -103,7 +103,7 @@ const FileUpload: FunctionComponent = () => {
       <div className="my-10 mx-12 flex items-center justify-center w-3/4">
       Select Department:
       <select
-            className=" w-full p-2.5 text-gray-500 bg-white border rounded-md shadow-sm outline-none appearance-none focus:border-indigo-600"
+            className="input input-bordered w-full p-2.5 text-gray-500 bg-white border rounded-md shadow-sm outline-none focus:border-indigo-600"
             onChange={changeDepartment}
             value={dept}
           >
