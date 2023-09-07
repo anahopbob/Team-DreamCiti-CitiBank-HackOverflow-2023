@@ -359,9 +359,9 @@ def delete_object_from_chromadb(
 # =============== Image Related Endpoints =================
 
 
-@router.get("/webscrape")
-def get_webscrape(website: str = Query(None, description="Website to scrape")):
-    results = WebScrape.getWebScrape(website)
+@router.post("/webscrape") # input: {"website": "https://www.google.com/"}
+def get_webscrape(website_dict: dict):
+    results = WebScrape.getWebScrape(website_dict["website"])
     # document = Document(id=website, text=results, department="test")
     # enroll(document)
     return results
