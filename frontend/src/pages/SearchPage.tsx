@@ -212,11 +212,15 @@ function Search() {
               <h1 className="card-title ml-4">
                 AI Search results for: {searchItem}
               </h1>
-              <div className="card-body">{summary}</div>
+              <div className="card-body">
+                <p className=" text-ellipsis whitespace-normal overflow-hidden ">
+                  {summary}
+                </p>
+                </div>
             </div>
             <div>
               <h1 className="card-title ml-4 py-10">
-                Compiled Search Results for :{searchItem}
+                Compiled Search Results for : {searchItem}
               </h1>
             </div>
           </div>

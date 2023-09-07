@@ -197,7 +197,7 @@ const ItemCard = (props: Data) => {
         Department: {capitalizeFirstLetter(props.department)}
       </h2>
       <div className="card-body ">
-        <p className="whitespace-normal">{props.text}</p>
+        <div className="text-ellipsis whitespace-normal overflow-hidden">{props.text}</div>
       </div>
       <div className="flex justify-end mx-20 my-10">
         <button className="btn btn-outline" onClick={downloadFile}>Go To</button>
