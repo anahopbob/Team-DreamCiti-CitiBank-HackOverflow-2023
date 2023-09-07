@@ -5,7 +5,7 @@ import type { webScrapes } from "../../jotai/webScrapeAtoms";
 import axios from "axios";
 
 const UrlInput: FunctionComponent = () => {
-  const departments = ["Any", "finance", "sales", "legal"];
+  const departments = ["Any", "finance", "sales", "technology", "legal"];
   const [dept, setDept] = useState(departments[0]);
   const changeDepartment = (e: any) => {
     setDept(e.target.value);
@@ -83,7 +83,7 @@ const UrlInput: FunctionComponent = () => {
         className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
       ></div>
       <form className="form-control" onSubmit={handleSubmit}>
-        <div className="input-group lg:input-group-lg py-10 w-full">
+        <div className="input-group lg:input-group-lg py-10 w-full text-base">
           <input
             type="text"
             placeholder="https://..."
@@ -106,7 +106,7 @@ const UrlInput: FunctionComponent = () => {
             Department
           </button> */}
 
-          <button className="btn" type="submit">
+          <button className="btn text-base" type="submit">
             ADD
           </button>
         </div>
@@ -114,18 +114,18 @@ const UrlInput: FunctionComponent = () => {
 
       {Object.values(webScrapeState).length > 0 && (
         <div className="w-[60%] mx-auto my-10">
-          <table className="table text-center">
+          <table className="table text-center text-base">
             <thead>
               <tr>
-                <th className="w-1/12">No.</th>
-                <th>URL</th>
+                <th className="w-1/12 text-base">No.</th>
+                <th className="text-base">URL</th>
               </tr>
             </thead>
             <tbody>
               {Object.values(webScrapeState).map((item, index) => (
                 <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{item.url}</td>
+                  <td className="text-base">{index + 1}</td>
+                  <td className="text-base">{item.url}</td>
                 </tr>
               ))}
             </tbody>

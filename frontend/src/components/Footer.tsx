@@ -2,7 +2,7 @@ import React from "react";
 
 export const Footer: React.FC = () => {
   return (
-    <footer className="footer p-10 bg-white border-t-2 border-gray-100 text-black">
+    <footer className="footer p-10 bg-gray-50 border-t-2 border-gray-100 text-gray-700">
       <aside>
         <p>
           <img className="w-28 h-20" src="/citi2.svg" alt="CitiBank Logo" />
@@ -11,7 +11,7 @@ export const Footer: React.FC = () => {
         </p>
       </aside>
       <nav>
-        <header className="footer-title">Services</header>
+        <header className="footer-title ">Services</header>
         <a className="link link-hover">Banking</a>
         <a className="link link-hover">Credit Cards</a>
         <a className="link link-hover">Mortagages</a>

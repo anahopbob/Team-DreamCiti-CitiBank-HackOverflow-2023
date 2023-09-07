@@ -7,7 +7,7 @@ import { headerAtom } from "../jotai/webScrapeAtoms";
 export const Header: React.FC = () => {
   const [isSearched] = useAtom(headerAtom);
   const navbarBgColor = isSearched ? "bg-citiblue" : "bg-white";
-  const buttonClass = isSearched ? "text-neutral-50" : "text-black";
+  const buttonClass = isSearched ? "text-neutral-50" : "text-gray-700";
 
   return (
     <div>

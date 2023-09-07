@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import FileUpload from "../components/Upload/FileUpload";
-import FileDownload from "../components/Upload/FileDownload";
+// import FileDownload from "../components/Upload/FileDownload";
 import UrlInput from "../components/Upload/UrlInput";
 import { useAtom } from "jotai";
 import { headerAtom } from "../jotai/webScrapeAtoms";
@@ -16,10 +16,13 @@ function Upload() {
   return (
     <div className="">
       <div className="flex items-center justify-center pt-10">
-        <div className="inline-flex shadow-sm rounded-md mb-5" role="group">
+        <div
+          className="inline-flex shadow-sm rounded-md mb-5 text-base"
+          role="group"
+        >
           <button
             type="button"
-            className={`border ${
+            className={`border text-base ${
               selectedOption === "URL"
                 ? "bg-citiblue text-white"
                 : "bg-white text-gray-900"

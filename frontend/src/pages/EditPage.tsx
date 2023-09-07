@@ -72,16 +72,16 @@ const Edit = () => {
         <div className="hero min-h-screen bg-base-200">
           <div className="hero-content text-center">
             <div className="max-w-md">
-              <h1 className="text-5xl font-bold">Hello!</h1>
+              <h1 className="text-5xl font-bold">Hello</h1>
               <p className="py-6">
-                No documents in system. To view please upload a document!
+                No documents in system. To view please upload a document
               </p>
               <Link
                 to={Routes.Upload}
                 className="w-40 text-l text-neutral-50 link-hover font-semibold"
               >
                 <button className="btn btn-primary">
-                  Upload a Document Here!
+                  Click here to upload a document
                 </button>
               </Link>
             </div>

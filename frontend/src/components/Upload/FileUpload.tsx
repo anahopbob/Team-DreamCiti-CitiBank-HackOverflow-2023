@@ -3,7 +3,7 @@ import { FileUploader } from "react-drag-drop-files";
 import axios from "axios";
 import FileText from "../../assets/filetext";
 import InfoSvg from "../../assets/infoicon";
-import { Button } from "antd";
+// import { Button } from "antd";
 
 const fileUploadChildren = (
   <div className="h-[420px] cursor-pointer border-2 border-dashed border-gray-400 hover:border-gray-800 focus:border-gray-800 mx-12">
@@ -24,13 +24,7 @@ const fileUploadChildren = (
 const fileTypes = ["PDF"];
 
 const FileUpload: FunctionComponent = () => {
-  // TYLER CODE
-  const departments = [
-    "any",
-    "finance",
-    "sales",
-    "legal",
-  ];
+  const departments = ["any", "finance", "sales", "technology", "legal"];
   const [dept, setDept] = useState(departments[0]);
   const changeDepartment = (e: any) => {
     setDept(e.target.value);
@@ -55,7 +49,8 @@ const FileUpload: FunctionComponent = () => {
     if (error) {
       toast.className = "bg-red-500 text-white px-4 py-2 rounded-md shadow-md";
     } else {
-      toast.className = "bg-green-500 text-white px-4 py-2 rounded-md shadow-md";
+      toast.className =
+        "bg-green-500 text-white px-4 py-2 rounded-md shadow-md";
     }
 
     toast.textContent = message;
@@ -73,13 +68,12 @@ const FileUpload: FunctionComponent = () => {
   }
   // TYLER CODE
 
-  
   const [dragStyling, setDragStyling] = useState<string>("");
-  const [file, setFile] = useState(null);
+  // const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]);
 
   const handleUploadOnChange = (file: File) => {
-    setFile(file);
+    // setFile(file);
     const formData = new FormData();
     formData.append("file", file);
     formData.append("department", dept);
@@ -98,16 +92,16 @@ const FileUpload: FunctionComponent = () => {
       });
   };
 
-  const handleFiles = () => {
-    axios
-      .get("http://localhost:8000/getallfiles")
-      .then((response) => {
-        setFiles(response.data.Contents);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  // const handleFiles = () => {
+  //   axios
+  //     .get("http://localhost:8000/getallfiles")
+  //     .then((response) => {
+  //       setFiles(response.data.Contents);
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
+  // };
 
   const handleOnDraggingStateChange = (dragging: boolean) => {
     if (dragging) {
@@ -119,34 +113,35 @@ const FileUpload: FunctionComponent = () => {
 
   return (
     <div>
-        <div
+      <div
         id="toast-container"
         className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
       ></div>
-      <div className="rounded-lg border border-blue-700 bg-blue-100 my-10 mx-12">
-        <div className="flex items-center">
+      <div className="w-full flex items-center justify-center">
+        <div className="flex items-center rounded-lg border border-blue-700 bg-blue-100 mt-10  mx-12 w-3/4">
           <div className="py-2 pl-4 pr-6">
             <InfoSvg />
           </div>
           <div className="label-regular leading-24 text-gray-900">
             <span className="">Upload Citibank documents below!</span>
           </div>
-
         </div>
       </div>
-      <div className="my-10 mx-12 flex items-center justify-center w-3/4">
-      Select Department:
-      <select
-            className="input input-bordered w-full p-2.5 text-gray-500 bg-white border rounded-md shadow-sm outline-none focus:border-indigo-600"
+      <div className="w-full flex items-center justify-center">
+        <div className="my-10 mx-12 items-center flex w-3/4">
+          Select Department:
+          <select
+            className="input input-bordered w-full p-2.5 text-gray-500 bg-white border rounded-md outline-none focus:border-indigo-600"
             onChange={changeDepartment}
             value={dept}
           >
             {departments.map((option, index) => (
               <option key={index} value={option}>
-                 {capitalizeFirstLetter(option)}
+                {capitalizeFirstLetter(option)}
               </option>
             ))}
           </select>
+        </div>
       </div>
 
       <div className={`${dragStyling} mb-32`}>

@@ -35,7 +35,7 @@ function Search() {
   useEffect(() => {
     setHeaderAtom(false);
   }, [setHeaderAtom]);
-  const departments = ["any", "finance", "sales", "legal"];
+  const departments = ["any", "finance", "sales", "technology", "legal"];
   const [tempArray, setTempArray] = useState<MyObject[]>([]);
   const [searched, setSearched] = useState(false); // Track whether a search has been performed
   // const [data, setData] = useState<Data | null>(null);
@@ -165,7 +165,7 @@ function Search() {
             objectId: responseData.results.metadatas[0][i].object_id,
             department: responseData.results.metadatas[0][i].department,
             text: responseData.results.documents[0][i],
-            contentId:  responseData.results.metadatas[0][i].content_id,
+            contentId: responseData.results.metadatas[0][i].content_id,
           };
           temp.push(dict);
         }
@@ -206,7 +206,7 @@ function Search() {
         {loading && (
           <span className="loading loading-spinner loading-lg w-15 py-8"></span>
         )}
-        {(!loading && summary) && (
+        {!loading && summary && (
           <div className="flex justify-center items-center flex-col">
             <div className="card bg-base-100 shadow-xl w-3/4 py-4 my-2 border">
               <h1 className="card-title ml-4">
@@ -216,7 +216,7 @@ function Search() {
                 <p className=" text-ellipsis whitespace-normal overflow-hidden ">
                   {summary}
                 </p>
-                </div>
+              </div>
             </div>
             <div>
               <h1 className="card-title ml-4 py-10">
