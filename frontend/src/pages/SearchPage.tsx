@@ -42,8 +42,8 @@ function Search() {
         "/test2.png",
         "/test3.png",
         "/test4.png",
-        "/test5.png",
-    ]); // Array of image URLs
+        "/test5.png",]); // Array of image URLs
+    const [loading, setLoading] = useState(false);
     const [empty, setEmpty] = useState(false);
     let currentToast: HTMLElement | null = null;
     function showToast(message: string) {
@@ -93,6 +93,7 @@ function Search() {
 
     const summarise = (data: Data) => {
         let apiUrl = "http://127.0.0.1:8000/summarise";
+        setLoading(true);
         fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -112,6 +113,7 @@ function Search() {
                     setSummary("I apologize, but I'm unable to understand the context you provided. Can you please provide more information or ask a more relevant question?");
                 } else {
                     setSummary(responseData.summary);
+                    setLoading(false);
                 }
                 // Handle the response data as needed
             })
@@ -119,8 +121,6 @@ function Search() {
                 console.log(err.message);
                 // Handle the error
             });
-
-
     }
 
     const search = (query: string, department: string) => {
@@ -186,7 +186,10 @@ function Search() {
             </div>
 
             <div className="flex justify-center items-center flex-col my-4 w-screen">
-                {summary && (
+                {loading && (
+                    <span className="loading loading-spinner loading-lg w-28"></span>
+                )}
+                {(!loading && summary)  && (
                     <div className="flex justify-center items-center flex-col">
                         <div className="card bg-base-100 shadow-xl w-3/4 py-4 my-2 border">
                             <h1 className="card-title ml-4">
@@ -207,7 +210,7 @@ function Search() {
                 {imgArray && (
                     <div className="card bg-base-100 shadow-xl w-3/4 py-4 my-2 border">
                         <span className="card-title ml-4">
-                            Images for: {searchItem}{" "}
+                            Images for: {searchItem}
                         </span>
                         <div className="card-body">
                             <div className="flex flex-wrap ">
