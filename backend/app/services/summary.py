@@ -9,8 +9,9 @@ load_dotenv()
 class SummariseContext():
 
     @staticmethod
-    def summarise_context(context: List[str]):
-        query = context[0]
+    def summarise_context(results_dict: dict):
+        query = results_dict["query"]
+        context = results_dict["results"]["documents"][0]
         openai.api_key = os.getenv("OPENAI_API_KEY")
         """Summarise the context."""
         combined_text = ("\n").join(context)

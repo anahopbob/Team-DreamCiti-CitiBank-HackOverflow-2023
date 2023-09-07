@@ -22,9 +22,13 @@ export const Header: React.FC = () => {
             to={Routes.Upload}
             className="w-40 text-l text-neutral-50 link-hover font-semibold"
           >
-            {/* <button className="btn normal-case text-l w-40 mx-10 hover:bg-gray-300"> */}
             Upload
-            {/* </button> */}
+          </Link>
+          <Link
+            to={Routes.Edit}
+            className="w-40 text-l text-neutral-50 link-hover font-semibold"
+          >
+            Edit
           </Link>
         </div>
       </div>
