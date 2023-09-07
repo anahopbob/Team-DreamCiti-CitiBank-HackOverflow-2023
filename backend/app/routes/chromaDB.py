@@ -79,26 +79,56 @@ s3Resource = boto3.resource('s3',
     aws_secret_access_key = ACCESS_SECRET_KEY
 )
 
+# <=========================== s3 routes ===========================>
+# return all the files on the bucket
+# @router.get("/getallfiles")
+# async def getAllFileNames():
+#     res = s3Client.list_objects_v2(Bucket=BUCKET_NAME)
+#     print(res)
+#     return res
+
+
+# # upload a file to the bucket
+# @router.post("/upload")
+# async def upload(file: UploadFile = File(...)):
+#     if file:
+#         print(file.filename)
+#         s3Client.upload_fileobj(file.file, BUCKET_NAME, file.filename)
+#         return "file uploaded"
+#     else:
+#         return "error in uploading."
+    
+# #! download file helper functions
+# async def s3_download(key: str):
+#     try:
+#         return s3Resource.Object(bucket_name = BUCKET_NAME, key = key).get()['Body'].read()
+#     except ClientError as err:
+#         logger.error(str(err))
+
+# # download a file from the bucket
+# @router.get('/download')
+# async def download(file_name: Union[str, None] = None):
+#     if not file_name:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail='No file name provided'
+#         )
+
+#     contents = await s3_download(key=file_name)
+#     return Response(
+#         content=contents,
+#         headers={
+#             'Content-Disposition': f'attachment;filename={file_name}',
+#             'Content-Type': 'application/octet-stream',
+#         }
+#     )
+
 # <=========================== chromaDB routes ===========================>
 # async function for PDF file upload to s3 bucket
 async def save_upload_file(file: UploadFile, fileName: str):
     try:
-        # Save a local copy of the uploaded file
-        with open(fileName, "wb") as local_file:
-            while True:
-                content = await file.read(1024)
-                if not content:
-                    break
-                local_file.write(content)
-
-        # Upload the local file to S3
-        s3Client.upload_file(fileName, BUCKET_NAME, fileName)
-
-        # Remove the local file after uploading to S3
-        os.remove(fileName)
-
-        return JSONResponse(content={"message": "Upload successfull"}, status_code=200)   
-    
+        s3Client.upload_file(file.file, BUCKET_NAME, fileName)
+        return JSONResponse(content={"message": "File uploaded successfully"}, status_code=200)   
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
@@ -106,8 +136,6 @@ async def save_upload_file(file: UploadFile, fileName: str):
 # async function for PDF text and image parse for AI VectorDB enrollment
 async def process_pdf_and_enroll(file: UploadFile, fileName: str) -> dict:
     try:
-        file.file.seek(0)
-
         # Read the PDF file
         pdfContent = await file.read()
 
@@ -434,7 +462,8 @@ def delete_object_from_chromadb(
 
 @router.post("/webscrape") # input: {"website": "https://www.google.com/"}
 def get_webscrape(website_dict: dict):
-    results = WebScrape.getWebScrape(website_dict["website"])
-    # document = Document(id=website, text=results, department="test")
-    # enroll(document)
+    website = website_dict["website"]
+    results = WebScrape.getWebScrape(website)
+    document = Document(id=website, text=results, department="test")
+    enroll(document)
     return results
