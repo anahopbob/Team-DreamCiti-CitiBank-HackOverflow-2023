@@ -319,14 +319,14 @@ def search_items(
     if len(results) == 0:
         return JSONResponse(content={"message": "No results found"}, status_code=200)
     else:
-        return JSONResponse(content={"results": results}, status_code=200)
+        return JSONResponse(content={"results": results , "query": query}, status_code=200)
 
 @router.post("/summarise")
 def summarise_items(
-    results_arr: dict
+    results_dict: dict
     ) -> str:
     try:
-        summary_output = SummariseContext.summarise_context(results_arr["results_arr"])
+        summary_output = SummariseContext.summarise_context(results_dict)
         return JSONResponse(content={"summary": summary_output}, status_code=200)
     except Exception as e:
         return JSONResponse(content={"error": "Internal Server Error"}, status_code=500)
