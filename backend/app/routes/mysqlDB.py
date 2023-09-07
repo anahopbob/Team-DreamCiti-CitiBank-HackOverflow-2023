@@ -139,11 +139,14 @@ def insert_object_info(
         }
 
 
-@router.post("/objectExcerptPairs")
+# @router.post("/objectExcerptPairs")
 def insert_object_excerpt_pairs(
     pairings: FastAPI_ObjectExcerptPairs,
     session: Session = Depends(get_db_session)
 ):
+    """
+    Refactored to be called by chromaDB.py
+    """
     try:
         pairs = []
         for pair in pairings.ExcerptIDs:
@@ -156,12 +159,13 @@ def insert_object_excerpt_pairs(
         session.add_all(pairs)
         session.commit()
         session.close()
-        return {"message": "Object info successfully inserted"}
+        return True
     except Exception as e:
-        return {
-            "message": "Object excerpt pairs insertion failed",
-            "error": str(e)
-        }
+        return False
+    # return {
+        #     "message": "Object excerpt pairs insertion failed",
+        #     "error": str(e)
+        # }
 
 @router.delete("/delete_object/{object_id}")
 def delete_object(

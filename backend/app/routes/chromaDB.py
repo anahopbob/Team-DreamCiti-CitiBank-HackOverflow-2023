@@ -8,6 +8,7 @@ from app.services.summary import SummariseContext
 from app.embeddings.imageToText import ImageToText
 from app.embeddings.imageEmbedding import ImageEmbedding
 from app.services.webscrape import WebScrape
+from app.routes.mysqlDB import insert_object_excerpt_pairs
 
 import chromadb
 import uuid
@@ -189,9 +190,12 @@ def enroll(document: Document)->None:
 
         # Associating the object_id with the excerpt_id (using a NoSQL way)
         id_pairing = {
-            id : excerpt_ids 
+            "ObjectID" : id,
+            "ExcerptIDs" : excerpt_ids
         }
-        print(f"This is the pairing that should be saved: {id_pairing}, pass ID and list")
+        
+        # Inserts into MySQL
+        insert_object_excerpt_pairs(id_pairing)
 
         collection.add(
             embeddings=embeddings,
