@@ -24,6 +24,25 @@ const fileUploadChildren = (
 const fileTypes = ["PDF"];
 
 const FileUpload: FunctionComponent = () => {
+  // TYLER CODE
+  const departments = [
+    "any",
+    "finance",
+    "sales",
+    "legal",
+  ];
+  const [dept, setDept] = useState(departments[0]);
+  const changeDepartment = (e: any) => {
+    setDept(e.target.value);
+  };
+
+  // Function to capitalize the first letter
+  const capitalizeFirstLetter = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+  // TYLER CODE
+
+  
   const [dragStyling, setDragStyling] = useState<string>("");
   const [file, setFile] = useState(null);
   const [files, setFiles] = useState([]);
@@ -32,6 +51,7 @@ const FileUpload: FunctionComponent = () => {
     setFile(file);
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("department", dept);
     console.log(formData);
     console.log(file);
     axios
@@ -44,7 +64,6 @@ const FileUpload: FunctionComponent = () => {
         console.log(response.data);
       })
       .catch((error) => {
-        console.error("ERRRORRRR");
         console.log(error);
       });
   };
@@ -78,8 +97,24 @@ const FileUpload: FunctionComponent = () => {
           <div className="label-regular leading-24 text-gray-900">
             <span className="">Upload Citibank documents below!</span>
           </div>
+
         </div>
       </div>
+      <div className="my-10 mx-12 flex items-center justify-center w-3/4">
+      Select Department:
+      <select
+            className=" w-full p-2.5 text-gray-500 bg-white border rounded-md shadow-sm outline-none appearance-none focus:border-indigo-600"
+            onChange={changeDepartment}
+            value={dept}
+          >
+            {departments.map((option, index) => (
+              <option key={index} value={option}>
+                 {capitalizeFirstLetter(option)}
+              </option>
+            ))}
+          </select>
+      </div>
+
       <div className={`${dragStyling} mb-32`}>
         <FileUploader
           children={fileUploadChildren}
