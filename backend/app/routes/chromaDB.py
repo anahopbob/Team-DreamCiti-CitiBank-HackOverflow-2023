@@ -278,16 +278,12 @@ async def enroll(document: Document)->None:
 
         # Associating the object_id with the excerpt_id (using a NoSQL way)
         id_pairing = {
-            id : excerpt_ids 
+            "ObjectID" : id,
+            "ExcerptIDs" : excerpt_ids
         }
-        print(f"This is the pairing that should be saved: {id_pairing}, pass ID and list")
         # Inserting into MySQL
-        print(id,excerpt_ids)
-        print("============")
-        print(type(id))
-        print(type(excerpt_ids))
+  
         _ = insert_object_excerpt_pairs(id,excerpt_ids)
-        print(_)
 
         collection.add(
             embeddings=embeddings,
