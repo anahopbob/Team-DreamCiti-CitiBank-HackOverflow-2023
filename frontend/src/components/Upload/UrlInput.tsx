@@ -16,6 +16,39 @@ const UrlInput: FunctionComponent = () => {
     return str.charAt(0).toUpperCase() + str.slice(1);
   };
 
+  let currentToast: HTMLElement | null = null;
+  function showToast(message: string, error: boolean) {
+    const toastContainer = document.getElementById("toast-container");
+
+    // Check if there's an existing toast, and remove it if it exists
+    if (currentToast) {
+      currentToast.remove();
+    }
+
+    const toast = document.createElement("div");
+
+    if (error) {
+      toast.className = "bg-red-500 text-white px-4 py-2 rounded-md shadow-md";
+    } else {
+      toast.className =
+        "bg-green-500 text-white px-4 py-2 rounded-md shadow-md";
+    }
+
+    toast.textContent = message;
+    if (toastContainer) {
+      toastContainer.appendChild(toast);
+    }
+
+    currentToast = toast;
+
+    // Automatically remove the toast after a few seconds
+    setTimeout(() => {
+      toast.remove();
+      currentToast = null; // Reset the currentToast
+    }, 3000); // 3000 milliseconds (3 seconds)
+  }
+  // TYLER CODE
+
   const [url, setUrl] = useState<string>("");
   const [webScrapeState, setWebScrapeState] = useAtom(webScrapeAtom);
 
@@ -23,6 +56,7 @@ const UrlInput: FunctionComponent = () => {
     event.preventDefault();
     scrapURL(url);
     setUrl("");
+    showToast("Uploaded!", false);
   };
 
   const scrapURL = (url: string) => {
@@ -44,7 +78,11 @@ const UrlInput: FunctionComponent = () => {
   };
 
   return (
-    <div className="flex items-center justify-center flex-col pt-18 pb-60">
+    <div className="flex items-center justify-center flex-col pt-20 pb-60">
+      <div
+        id="toast-container"
+        className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
+      ></div>
       <form className="form-control" onSubmit={handleSubmit}>
         <div className="input-group lg:input-group-lg py-10 w-full">
           <input
