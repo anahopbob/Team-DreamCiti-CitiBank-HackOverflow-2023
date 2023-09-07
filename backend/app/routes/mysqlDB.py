@@ -44,6 +44,24 @@ def get_object_info(
             "error": str(e)
         }
     
+# @router.get("/getUrl")
+# def get_object_info(
+#     object_id: str,
+#     session: Session = Depends(get_db_session)
+# ):
+#     """
+#     Get a particular object info from the database.
+#     """
+#     try:
+#         object_info = session.query(ObjectInfo).filter(ObjectInfo.ObjectName == object_id).first()
+#         session.close()
+#         return object_info
+#     except Exception as e:
+#         return {
+#             "message": "Object info retrieval failed",
+#             "error": str(e)
+#         }
+    
 @router.get("/objectExcerptPairs")
 def get_object_excerpt_pairs(
     object_id: str,

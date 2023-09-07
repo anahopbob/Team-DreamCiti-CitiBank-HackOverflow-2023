@@ -13,16 +13,28 @@ const FileDownload: FunctionComponent = () => {
     setUpdated(message);
     // Make a GET request to download the file
     console.log("calling download");
-    axios
-      .get(`http://localhost:8000/download?file_name=${message}`)
+    const apiUrl = `http://localhost:8000/download?file_name=${message}`;
+
+    fetch(apiUrl)
       .then((response) => {
-        // Trigger the file download
-        const url = window.URL.createObjectURL(new Blob([response.data]));
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.blob(); // Parse the response as a Blob
+      })
+      .then((blob) => {
+        // Create a URL for the Blob
+        const url = window.URL.createObjectURL(blob);
+  
+        // Create a link element to trigger the download
         const link = document.createElement("a");
         link.href = url;
-        link.setAttribute("download", message); //or any other extension
+        link.setAttribute("download", message); // Set the filename
         document.body.appendChild(link);
         link.click();
+  
+        // Clean up the URL object to free resources
+        window.URL.revokeObjectURL(url);
       })
       .catch((error) => {
         console.error("Error downloading the file.", error);

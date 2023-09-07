@@ -83,8 +83,7 @@ const FileUpload: FunctionComponent = () => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("department", dept);
-    console.log(formData);
-    console.log(file);
+
     axios
       .post("http://localhost:8000/pdf-enroll", formData, {
         headers: {
@@ -93,7 +92,6 @@ const FileUpload: FunctionComponent = () => {
       })
       .then((response) => {
         showToast("Uploaded!", false);
-        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);

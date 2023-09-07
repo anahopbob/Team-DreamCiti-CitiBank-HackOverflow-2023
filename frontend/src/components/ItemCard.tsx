@@ -6,6 +6,7 @@ interface Data {
   department: string;
   text: string;
   objectId: string;
+  contentId: string;
 }
 
 interface QueryData {
@@ -20,6 +21,7 @@ interface QueryData {
 }
 
 const ItemCard = (props: Data) => {
+  const [isLink, setIsLink] = useState(false);
   const [hasUpvote, setHasUpvote] = useState(false);
   const [hasDownvote, setHasDownvote] = useState(false);
   const [count, setCount] = useState(0);
@@ -60,6 +62,7 @@ const ItemCard = (props: Data) => {
   const queryData = async () => {
     const apiUrl =
       "http://127.0.0.1:8000/objectInfo?object_id=" + props.objectId;
+      console.log(apiUrl)
     fetch(apiUrl)
       .then((response) => {
         if (!response.ok) {
@@ -68,6 +71,8 @@ const ItemCard = (props: Data) => {
         return response.json();
       })
       .then((responseData: QueryData) => {
+        console.log(responseData);
+        setIsLink(responseData.isLink);
         setUrl(responseData.URL);
         setFilename(responseData.ObjectName);
         setCount(responseData.Upvotes - responseData.Downvotes);
@@ -146,35 +151,33 @@ const ItemCard = (props: Data) => {
 
   const downloadFile = () => {
     
-    const apiUrl = "http://127.0.0.1:8000/download?file_name=" + url;
-
+    if (isLink) {
+      window.open(url, "_blank");
+      return;
+    }
+    const apiUrl = "http://127.0.0.1:8000/download?file_name=" + props.objectId;
     fetch(apiUrl)
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
-        return response.blob(); // Get the response body as a Blob
+        return response.blob(); // Parse the response as a Blob
       })
-      .then((blobData) => {
-        // Create a URL for the Blob object
-        const blobUrl = window.URL.createObjectURL(blobData);
-
-        // Create a temporary link element to trigger the download
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = filename; // Set the filename
+      .then((blob) => {
+        // Create a URL for the Blob
+        const url = window.URL.createObjectURL(blob);
+        // Create a link element to trigger the download
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", props.objectId); // Set the filename
         document.body.appendChild(link);
-
-        // Trigger the click event to initiate the download
         link.click();
-
-        // Clean up the temporary link and URL object
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(blobUrl);
+  
+        // Clean up the URL object to free resources
+        window.URL.revokeObjectURL(url);
       })
-      .catch((err) => {
-        console.error(err.message);
-        // Handle the error
+      .catch((error) => {
+        console.error("Error downloading the file.", error);
       });
   }
 
@@ -190,10 +193,11 @@ const ItemCard = (props: Data) => {
       ></div>
 
       <h2 className="card-title ml-4">
+
         Department: {capitalizeFirstLetter(props.department)}
       </h2>
-      <div className="card-body">
-        <p>{props.text}</p>
+      <div className="card-body ">
+        <div className="text-ellipsis whitespace-normal overflow-hidden">{props.text}</div>
       </div>
       <div className="flex justify-end mx-20 my-10">
         <button className="btn btn-outline" onClick={downloadFile}>Go To</button>

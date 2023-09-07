@@ -43,6 +43,15 @@ html {
   background-color: #00325e;
 }
 
+/* .card-body {
+  white-space: normal; 
+  overflow: hidden;
+  text-overflow: ellipsis;
+} */
+/* p {
+  white-space: nowrap;
+  overflow: hidden;
+} */
 /* a {
   font-weight: 500;
   color: #646cff;

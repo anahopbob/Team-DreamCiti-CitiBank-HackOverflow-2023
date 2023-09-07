@@ -16,7 +16,6 @@ function DeleteButton(props: Data) {
     // const [data, setData] = useState(null);
     const deleteDocument = () => {
         const apiUrl = "http://127.0.0.1:8000/delete_object/" + props.ObjectID;
-        console.log(apiUrl);
         fetch(apiUrl, {
             method: 'DELETE', // Specify the HTTP method as 'DELETE'
         })
