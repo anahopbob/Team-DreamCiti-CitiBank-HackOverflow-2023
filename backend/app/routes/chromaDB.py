@@ -315,7 +315,7 @@ def enroll_image_caption(image: ImageDict):
   
     image_text = image_obj.getImageToText(file)
 
-    return image_text
+
     # ============ Start AI Portion==============
     # Get embeddings
     custom_embeddings = MiniLM_embedder()
