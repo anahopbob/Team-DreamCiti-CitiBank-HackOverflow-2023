@@ -4,6 +4,8 @@ from selenium.webdriver.chrome.service import Service
 import re
 from selenium.webdriver.common.by import By
 
+import urllib.request
+
 class WebScrape:
         
     @staticmethod
@@ -20,13 +22,14 @@ class WebScrape:
             el_height = int(i.get_attribute('height'))
             if min(el_width, el_height) > 50:
                 img_src = i.get_attribute("src")
+                filename = img_src.split('/')[-1]
                 img_caption = img_src.split('/')[-1].split('.')[0]
                 img_str+= f'\n{img_src}\n'
-                print(img_caption)
+                urllib.request.urlretrieve(img_src, "./sample_images/" + filename)
 
         para = driver.find_elements(By.TAG_NAME, 'p')
         final_text = ''
         for index, para in enumerate(para):
             final_text += f'\n{para.text}\n'
 
-        return final_text 
+        return img_str
