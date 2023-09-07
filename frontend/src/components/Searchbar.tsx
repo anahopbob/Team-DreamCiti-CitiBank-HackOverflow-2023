@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 interface SearchbarProps {
   onSearch: (searchValue: string, department: string) => void;
   departments: string[];

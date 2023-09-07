@@ -93,9 +93,9 @@ function Search() {
     fetch(apiUrl, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json", // Set the content type to JSON
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data), // Replace with your object data
+      body: JSON.stringify(data),
     })
       .then((response) => {
         if (!response.ok) {
@@ -115,11 +115,9 @@ function Search() {
           setSummary(responseData.summary);
           setLoading(false);
         }
-        // Handle the response data as needed
       })
       .catch((err) => {
         console.log(err.message);
-        // Handle the error
       });
   };
 
@@ -146,7 +144,7 @@ function Search() {
       })
       .then((responseData: Data) => {
         console.log(responseData);
-        let temp: MyObject[] = [];
+        const temp: MyObject[] = [];
         for (let i = 0; i < responseData.results.documents[0].length; i++) {
           if (responseData.results.documents[0][i] === "") {
             continue;
@@ -166,13 +164,13 @@ function Search() {
       });
   };
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ">
       <div
         id="toast-container"
         className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
       ></div>
       <div
-        className={`flex justify-center items-center flex-col h-screen ${
+        className={`flex justify-center items-center flex-col max-h-screen ${
           searched ? "hidden" : ""
         }`}
       >
@@ -193,7 +191,7 @@ function Search() {
 
       <div className="flex justify-center items-center flex-col my-4 w-screen">
         {loading && (
-          <span className="loading loading-spinner loading-lg w-28"></span>
+          <span className="loading loading-spinner loading-lg"></span>
         )}
         {!loading && summary && (
           <div className="flex justify-center items-center flex-col">
