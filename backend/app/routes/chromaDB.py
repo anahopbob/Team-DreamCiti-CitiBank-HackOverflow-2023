@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Query, File, UploadFile, HTTPException
+from fastapi import APIRouter, Query, File, UploadFile, HTTPException, Response, status
 from fastapi.responses import JSONResponse
 
 from app.embeddings.MiniLM_embedder import MiniLM_embedder
@@ -17,8 +17,15 @@ import io
 import os
 import tabula
 import pandas as pd
+import boto3
+import traceback
+import asyncio
 
-from typing import List
+from botocore.exceptions import ClientError
+from dotenv import load_dotenv
+from loguru import logger
+
+from typing import List, Union
 
 from chromadb.utils import embedding_functions
 from PyPDF2 import PdfReader
@@ -56,6 +63,153 @@ imagesembedding_collection = client.get_or_create_collection(
     metadata={"hnsw:space": "cosine"}
 )
 
+ACCESS_KEY_ID = os.getenv("ACCESS_KEY_ID")
+ACCESS_SECRET_KEY = os.getenv("ACCESS_SECRET_KEY")
+
+#initialize S3 client
+BUCKET_NAME='dreamciti'
+
+s3Client = boto3.client('s3',
+    aws_access_key_id = ACCESS_KEY_ID,
+    aws_secret_access_key = ACCESS_SECRET_KEY
+)
+
+s3Resource = boto3.resource('s3',
+    aws_access_key_id = ACCESS_KEY_ID,
+    aws_secret_access_key = ACCESS_SECRET_KEY
+)
+
+# <=========================== s3 routes ===========================>
+# return all the files on the bucket
+# @router.get("/getallfiles")
+# async def getAllFileNames():
+#     res = s3Client.list_objects_v2(Bucket=BUCKET_NAME)
+#     print(res)
+#     return res
+
+
+# # upload a file to the bucket
+# @router.post("/upload")
+# async def upload(file: UploadFile = File(...)):
+#     if file:
+#         print(file.filename)
+#         s3Client.upload_fileobj(file.file, BUCKET_NAME, file.filename)
+#         return "file uploaded"
+#     else:
+#         return "error in uploading."
+    
+# #! download file helper functions
+# async def s3_download(key: str):
+#     try:
+#         return s3Resource.Object(bucket_name = BUCKET_NAME, key = key).get()['Body'].read()
+#     except ClientError as err:
+#         logger.error(str(err))
+
+# # download a file from the bucket
+# @router.get('/download')
+# async def download(file_name: Union[str, None] = None):
+#     if not file_name:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail='No file name provided'
+#         )
+
+#     contents = await s3_download(key=file_name)
+#     return Response(
+#         content=contents,
+#         headers={
+#             'Content-Disposition': f'attachment;filename={file_name}',
+#             'Content-Type': 'application/octet-stream',
+#         }
+#     )
+
+# <=========================== chromaDB routes ===========================>
+# async function for PDF file upload to s3 bucket
+async def save_upload_file(file: UploadFile, fileName: str):
+    try:
+        s3Client.upload_file(file.file, BUCKET_NAME, fileName)
+        return JSONResponse(content={"message": "File uploaded successfully"}, status_code=200)   
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+    
+# async function for PDF text and image parse for AI VectorDB enrollment
+async def process_pdf_and_enroll(file: UploadFile, fileName: str) -> dict:
+    try:
+        # Read the PDF file
+        pdfContent = await file.read()
+
+        # Create a PDF document object using PyMuPDF (Fitz)
+        pdf_document = fitz.open(stream=pdfContent, filetype="pdf")
+
+        # Directory to save extracted images
+        images_dir = "images"
+        os.makedirs(images_dir, exist_ok=True)
+
+        # Initialize a variable to store all the extracted text, with delimiter for separate pages and images
+        extractedText = []
+
+        # Iterate through each page of the PDF
+        for page_number in range(len(pdf_document)):
+            page = pdf_document.load_page(page_number)
+
+            # Extract text from the page
+            pageText = page.get_text()
+
+            # Check if the page contains images and extract all images (using OCR to detect images)
+            images = page.get_images(full=True)
+
+            # If the page contains images, add a unique image indicator to the extracted text for that particular page only
+            if images:
+                for idx, image in enumerate(images):
+                    xref = image[0]
+                    base_img = pdf_document.extract_image(xref)
+                    image_data = base_img["image"]
+                    extension = base_img["ext"]
+
+                    # Renaming the image file accordingly with a unique id for text extraction formatting
+                    uniqueId = str(uuid.uuid4())[:]
+                    image_id = f"<?% type=image,object_id={uniqueId} %>"
+
+                    # (to be linked with S3)
+                    # image_name = f"type=image,object_id={uniqueId}.{extension}"
+
+                    # Currently saves to the images folder in the backend root directory (to be changed to S3 bucket)
+                    # with open(test_image_id, "wb") as image_file:
+                    #     image_file.write(image_data)
+
+                    # Add image indicator to the extracted text
+                    pageText = image_id + pageText + image_id
+
+            # Add the extracted text to the overall extracted text
+            extractedText.append(pageText)
+
+        # Close the PDF document after iteration completed
+        pdf_document.close()
+
+        # Invoke AI PDF Enrollment function here (ID to be retrieved from S3, department to be retrieved from frontend)
+        sampleDepartment = "HumanResources"
+        finalText = ''.join(extractedText)
+
+        finalDocument = {
+            "id": fileName,
+            "text": finalText,
+            "department": sampleDepartment
+        }
+
+        # Invoke async AI enrollment function here and await response
+        AiTask = await enroll(finalDocument)
+
+        # Check the AI enrollment response and return it
+        if AiTask.status_code == 200:
+            return JSONResponse(content={"message": "Enrollment successfull"}, status_code=200)   
+        else:
+            return JSONResponse(content={"message": "Error in enrollment"}, status_code=500)
+
+    except Exception as e:
+        # Handle any exceptions here
+        return {"error": str(e)}
+    
 
 @router.post("/pdf-enroll")
 async def pdf_enroll(file: UploadFile):
@@ -65,87 +219,34 @@ async def pdf_enroll(file: UploadFile):
     together with the reformatted text, it will then be enrolled into the Vector DB.
     """
     # Extracting file properties
+    pdfFile = file.file
     fileName = file.filename
     fileExtension = file.filename.split(".")[-1].lower()
 
     # Determining file type
     if fileExtension == "pdf":
         try:
-            # read pdf file
-            pdfContent = await file.read()
-        
-            # Create a PDF document object using PyMuPDF (Fitz)
-            pdf_document = fitz.open(stream=pdfContent, filetype="pdf")
+            # Creating an async task for the S3 upload and run it concurrently
+            s3_upload_task = asyncio.create_task(save_upload_file(file, fileName))
 
-            # Directory to save extracted images
-            images_dir = "images"
-            os.makedirs(images_dir, exist_ok=True)
+            # Seek back to the beginning of the uploaded file
+            file.file.seek(0)
 
-            # Initialize a variable to store all the extracted text, with delimiter for separate pages and images
-            extractedText = [] 
+            # Creating an asyncio task for AI enrollment
+            AiTask = asyncio.create_task(process_pdf_and_enroll(file, fileName))
 
-            # Iterate through each page of the PDF
-            for page_number in range(len(pdf_document)):
-                page = pdf_document.load_page(page_number)
+            # Await both responses
+            s3Response = await s3_upload_task
+            AIresponse = await AiTask
 
-                # Extract text from the page
-                pageText = page.get_text()
-
-                # Check if the page contains images and extract all images (using OCR to detect images)
-                images = page.get_images(full=True)
-
-                # If page contains images, add a unique image indicator to the extracted text for that particular page only
-                if images:
-                    for idx, image in enumerate(images):
-                        xref = image[0]
-                        base_img = pdf_document.extract_image(xref)
-                        image_data = base_img["image"]
-                        extension = base_img["ext"]
-
-                        # renaming the image file accordingly with a unique id for text extractation formatting
-                        uniqueId = str(uuid.uuid4())[:]
-                        image_id = f"<?% type=image,object_id={uniqueId} %>"
-
-                        # (to be linked with s3)
-                        # image_name = f"type=image,object_id={uniqueId}.{extension}"
-
-                        # currently saves to images folder in backend root directory (to be changed to s3 bucket)
-                        # with open(test_image_id, "wb") as image_file:
-                        #     image_file.write(image_data)
-
-                        # Add image indicator to the extracted text
-                        pageText = image_id + pageText + image_id
-                
-                # Add the extracted text to the overall extracted text
-                extractedText.append(pageText)
-                
-            # Close the PDF document after iteration completed
-            pdf_document.close()
-            
-            # Invoke AI PDF Enrollment function here (ID to be retrieved from s3, department to be retrieved from frontend)
-            sampleId = "12345"
-            sampleDepartment = "HumanResources"
-            finalText = ''.join(extractedText)
-
-            # print("sampleId: ", sampleId)
-            # print("sampleDepartment: ", sampleDepartment)
-            # print("finalText: ", finalText)
-
-            finalDocument = {
-                "id": sampleId,
-                "text": finalText,
-                "department": sampleDepartment
-            }
-
-            # Determining success of enrollment based on status code
-            response = enroll(finalDocument)
-            if response.status_code == 200:
+            if AIresponse.status_code == 200 and s3Response.status_code == 200:
                 return {"message": "Successfully uploaded PDF"}
             else:
                 return {"message": "Error in uploading PDF"}
         
         # catching and returning any errors
         except Exception as e:
+            traceback.print_exc()
             return {"error": str(e)}
     
     # raising HTTP exception if file is not a PDF
@@ -154,7 +255,7 @@ async def pdf_enroll(file: UploadFile):
     
 
 @router.post("/enroll")
-def enroll(document: Document)->None:
+async def enroll(document: Document)->None:
     """
     Given a particular department and text, get embeddings for the text 
     and enroll inside the DB.
