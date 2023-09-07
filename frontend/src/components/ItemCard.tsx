@@ -62,7 +62,6 @@ const ItemCard = (props: Data) => {
   const queryData = async () => {
     const apiUrl =
       "http://127.0.0.1:8000/objectInfo?object_id=" + props.objectId;
-      console.log(apiUrl)
     fetch(apiUrl)
       .then((response) => {
         if (!response.ok) {
@@ -71,7 +70,6 @@ const ItemCard = (props: Data) => {
         return response.json();
       })
       .then((responseData: QueryData) => {
-        console.log(responseData);
         setIsLink(responseData.isLink);
         setUrl(responseData.URL);
         setFilename(responseData.ObjectName);

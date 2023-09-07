@@ -45,7 +45,7 @@ function Upload() {
       {selectedOption === "PDF" && (
         <>
           <FileUpload />
-          <FileDownload />
+          {/* <FileDownload /> */}
         </>
       )}
     </div>
