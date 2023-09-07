@@ -13,6 +13,7 @@ interface Results {
 interface Metadata {
   department: string;
   object_id: string;
+  content_id: string;
 }
 
 interface Data {
@@ -23,6 +24,7 @@ interface MyObject {
   objectId: string;
   department: string;
   text: string;
+  contentId: string;
 }
 
 function Search() {
@@ -69,6 +71,7 @@ function Search() {
       setTempArray([]);
       setEmpty(true);
       setSearched(false);
+      setSummary("");
       showToast("Search field cannot be empty!");
       return;
     }
@@ -145,17 +148,20 @@ function Search() {
         return response.json();
       })
       .then((responseData: Data) => {
-        console.log(responseData);
+        console.log("RESPONSE SDATA" + JSON.stringify(responseData));
         let temp: MyObject[] = [];
         for (let i = 0; i < responseData.results.documents[0].length; i++) {
           if (responseData.results.documents[0][i] === "") {
             continue;
           }
+          console.log("RESULTS" + responseData.results.metadatas[0][i]);
           let dict: MyObject = {
             objectId: responseData.results.metadatas[0][i].object_id,
             department: responseData.results.metadatas[0][i].department,
             text: responseData.results.documents[0][i],
+            contentId:  responseData.results.metadatas[0][i].content_id,
           };
+          console.log("CONTENT"+ dict.contentId)
           temp.push(dict);
         }
         setTempArray(temp);
@@ -193,7 +199,7 @@ function Search() {
         {loading && (
           <span className="loading loading-spinner loading-lg w-15 py-8"></span>
         )}
-        {!loading && summary && (
+        {(!loading && summary) && (
           <div className="flex justify-center items-center flex-col">
             <div className="card bg-base-100 shadow-xl w-3/4 py-4 my-2 border">
               <h1 className="card-title ml-4">
@@ -225,17 +231,21 @@ function Search() {
           </div>
         )}
 
-        {tempArray && (
+        {tempArray.length !== 0 && (
           <div className="flex justify-center items-center flex-col">
             <div>
               <h1 className="card-title ml-4 py-10">Documents</h1>
             </div>
             {tempArray.map((item, index) => (
+              // <div>
+              //   {JSON.stringify(item)}
+              // </div>
               <ItemCard
                 key={index}
                 department={item.department}
                 text={item.text}
                 objectId={item.objectId}
+                contentId={item.contentId}
               />
             ))}
           </div>
