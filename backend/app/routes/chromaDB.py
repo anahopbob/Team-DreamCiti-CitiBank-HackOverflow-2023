@@ -312,7 +312,9 @@ def enroll_image_caption(file: UploadFile):
     # get text of the image
     image_obj = ImageToText()
     print(fileName)
-    image_text = image_obj.getImageToText("./sample_images/" + fileName)
+    abs_path = "C:\\Users\\yimen\\Documents\\GitHub\\Team-DreamCiti-CitiBank-HackOverflow-2023\\frontend\\src\\images"
+    img_path = os.path.join(abs_path, fileName)
+    image_text = image_obj.getImageToText(img_path)
 
     return image_text
     
@@ -476,8 +478,6 @@ async def get_webscrape(
 ):
     
     website_id = str(uuid.uuid4())
-
-    department = website_dict["department"]
     website = website_dict["website"]
     department = website_dict["department"]
     results = WebScrape.getWebScrape(website)

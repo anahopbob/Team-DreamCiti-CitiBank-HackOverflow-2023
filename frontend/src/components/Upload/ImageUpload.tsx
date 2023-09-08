@@ -131,7 +131,7 @@ const ImageUpload: FunctionComponent = () => {
           id="toast-container"
           className="fixed z-50 bottom-0 right-0 p-4 space-y-2"
         ></div>
-       {file && <img src={`/src/assets/${file.name}`} className="h-auto mx-auto max-w-full"/>}
+       {file && <img src={`/src/images/${file.name}`} className="h-auto mx-auto max-w-full"/>}
         <div className="rounded-lg border border-blue-700 bg-blue-100 my-10 mx-12">
           <div className="flex items-center">
             <div className="py-2 pl-4 pr-6">
