@@ -32,4 +32,4 @@ class WebScrape:
         for index, para in enumerate(para):
             final_text += f'\n{para.text}\n'
 
-        return img_str
+        return final_text
