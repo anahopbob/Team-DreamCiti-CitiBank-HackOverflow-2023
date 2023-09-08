@@ -147,8 +147,12 @@ async def process_pdf_and_enroll(file: UploadFile, fileName: str, department: st
                     # image_name = f"type=image,object_id={uniqueId}.{extension}"
 
                     # Currently saves to the images folder in the backend root directory (to be changed to S3 bucket)
-                    # with open(test_image_id, "wb") as image_file:
-                    #     image_file.write(image_data)
+                    # test_image_id = os.path.join("images", f"{uniqueId}.{extension}")
+                    abs_path = "D:\\GitHub\\Team-DreamCiti-CitiBank-HackOverflow-2023\\frontend\\src\\images"
+                    test_image_id = os.path.join(abs_path, f"{uniqueId}.jpeg")
+
+                    with open(test_image_id, "wb") as image_file:
+                        image_file.write(image_data)
 
                     # Add image indicator to the extracted text
                     pageText = image_id + pageText + image_id
@@ -226,10 +230,11 @@ async def pdf_enroll(
             s3Response = await s3_upload_task
             AIresponse = await AiTask
 
-            if AIresponse.status_code == 200 and s3Response.status_code == 200:
-                return {"message": "Successfully uploaded PDF"}
-            else:
-                return {"message": "Error in uploading PDF"}
+            # if AIresponse.status_code == 200 and s3Response.status_code == 200:
+            #     return {"message": "Successfully uploaded PDF"}
+            # else:
+            #     return {"message": "Error in uploading PDF"}
+            return {"message": "Error in uploading PDF"}
         
         # catching and returning any errors
         except Exception as e:
@@ -408,7 +413,7 @@ def search_items(
     query: str = Query(..., description="Query string"),
 ):
     # Use 5 Chunks of text to do the similarity search
-    if department == None:
+    if department == None or department.lower() == "any":
         results = collection.query(
             query_texts=[query],
             n_results=5,
